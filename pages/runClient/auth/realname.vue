@@ -15,27 +15,37 @@
 			</u-form-item>
 			<u-form-item :label-position="labelPositionImg" label="上传图片" prop="photo" label-width="150">
 				<view class="form-upload">
-					<view @click="upload(1)" class="form-upload-item">
-						<view v-if="">
-							<image src="/static/runClient/imgadd.png" mode="aspectFit"></image>
+					<view class="form-upload-item">
+						<view>
+							<view class="pre-item" v-for="(item, index) in list1" :key="index">
+								<image class="pre-item-image" :src="item.url" mode="aspectFill"></image>
+								<view class="u-delete-icon" @tap.stop="deleteItem(index)">
+									<u-icon name="close" size="20" color="#ffffff"></u-icon>
+								</view>
+							</view>
+							<u-upload ref="uUpload" :header="header" :max-count="1" :action="action" :auto-upload="false" :custom-btn="true" @on-list-change="onListChange" :show-upload-list="false">
+								<view slot="addBtn" class="slot-btn" hover-class="slot-btn__hover" hover-stay-time="150">
+									<image src="/static/runClient/imgadd.png" class="form-upload-image" mode="aspectFit"></image>
+								</view>
+							</u-upload>
 						</view>
-						<view v-if="">
+						<view v-if="list1.length==0">
 							身份证正面
 						</view>
 						
 					</view>
-					<view @click="upload(2)" class="form-upload-item" style="float: right;">
+					<view class="form-upload-item" style="float: right;">
 						<view class="">
-							<image src="/static/runClient/imgadd.png" mode="aspectFit"></image>
+							<image src="/static/runClient/imgadd.png" class="form-upload-image" mode="aspectFit"></image>
 						</view>
-						<view class="">
+						<view v-if="list2.length==0">
 							身份证反面
 						</view>
 					</view>
 				</view>
 			</u-form-item>
 			<view style="margin-top: 25px;">
-					<u-button :custom-style="customStyle" :hair-line="hairLin" @click="toPage('/pages/auth/student')">下一步</u-button>
+					<u-button :custom-style="customStyle" :onSuccess="onSuccess" :hair-line="hairLin" @click="toPage('/pages/auth/student')">下一步</u-button>
 			</view>
 		</u-form>
 		
@@ -46,6 +56,7 @@
 <script>
 	import {getDate} from '@/common/fun.js'
 	import {realNameAuthView, realNameAuthCreate, realNameAuthUpdate} from '../../../common/api/runClient/auth.js'
+	import config from '../../../common/config.js'
 	
 	export default {
 		data() {
@@ -92,16 +103,22 @@
 				activeColor: '#FFE400',
 				photo_f:null,
 				photo_b:null,
-				status:false
+				status:false,
+				action: config.baseUrl + '/pbl/index/fileupload',
+				header:{},
+				list1: [],
+				list2: [],
 			}
 		},
 		onLoad() {
 			this.selectorDefTime = getDate;
 			this.getData()
+			this.header['access-token']= uni.getStorageSync('access-token')
 		},
 		methods: {
 			toPage (path) {
-				// console.log(this.model)
+				console.log(this.model)
+				this.$refs.uUpload.upload();
 				return
 				this.submitData();
 			},
@@ -110,22 +127,14 @@
 				this.showGender = a.text
 				this.model.gender = a.val;
 			},
-			upload(type){
-				uni.chooseImage({
-					count:1,
-					success: (chooseImageRes) => {
-						const tempFilePaths = chooseImageRes.tempFilePaths;
-						// tempFilePaths.forEach(v => {
-						// 	that.uploadImg('/public/fileupload',v).then(res =>{
-						// 		var data = JSON.parse(res.data)
-						// 		if(data.status == 200 ) {
-						// 			that.imgList.push(data.data.file_url);
-						// 		}
-						// 	})
-						// })
-						console.log(tempFilePaths)
-					}
-				});
+			onListChange(lists) {
+				this.list1 = lists;
+			},
+			deleteItem(index) {
+				this.$refs.uUpload.remove(index);
+			},
+			onSuccess(data, index, lists, name){
+				console.log(data)
 			},
 			async getData(){
 				let res = await realNameAuthView()
@@ -147,9 +156,7 @@
 </script>
 
 <style>
-	.form-upload{
-	}
-	.form-upload image{
+	.form-upload-image{
 		width: 30px;
 		height: 29px;
 		margin-top: 21px;
@@ -162,5 +169,32 @@
 		box-sizing: border-box;
 		height: 100px;
 		width: 160px;
+	}
+	
+	.pre-item {
+		flex: 0 0 48.5%;
+		border-radius: 10rpx;
+		height: 100px;
+		overflow: hidden;
+		position: relative;
+		margin-bottom: 20rpx;
+	}
+	
+	.pre-item-image {
+		width: 100%;
+		height: 100px;
+	}
+	.u-delete-icon {
+		position: absolute;
+		top: 10rpx;
+		right: 10rpx;
+		z-index: 10;
+		background-color: $u-type-error;
+		border-radius: 100rpx;
+		width: 44rpx;
+		height: 44rpx;
+		display: flex;
+		align-items: center;
+		justify-content: center;
 	}
 </style>

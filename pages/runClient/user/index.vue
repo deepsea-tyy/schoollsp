@@ -3,7 +3,7 @@
 		<view style="overflow: hidden;">
 			<view class="avatar"><image :src="userInfo.file.file_url" class="nodata" mode="aspectFit"></image></view>
 			<view style="padding: 7px;">
-				<view v-if="userInfo.length == 0" style="font-size: 20px;color: #333333;">点击登录</view>
+				<view v-if="!userInfo.nickname" @click="toPage('/pages/login/wxlogin')" style="font-size: 20px;color: #333333;">点击登录</view>
 				<view style="font-size: 18px;color: #333333;">{{userInfo.nickname}}</view>
 				<view v-if="studentAuth === null" style="font-size: 12px;color: #666666;">未实名认证</view>
 				<view v-if="studentAuth == 0" style="font-size: 12px;color: #666666;">审核中</view>
