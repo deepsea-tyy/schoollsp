@@ -3,11 +3,11 @@
 		<view style="margin-bottom: 18px;">
 			<u-steps :list="stepList" :current="current" :mode="mode" :active-color="activeColor"></u-steps>
 		</view>
-		
 		<u-cell-group>
 			<u-cell-item @click="selectValue(1)" icon="" title="选择校区">{{model.school_id?model.school_id:"选择学校"}} </u-cell-item>
 			<u-cell-item @click="selectValue(2)" icon="" title="选择校区">{{model.school_area_id?model.school_area_id:"选择校区"}} </u-cell-item>
 		</u-cell-group>
+		
 		<view style="padding: 0 42rpx;">
 		<u-form>
 			<u-form-item :label-position="labelPositionText" label="院系" label-width="150" prop="faculty">
@@ -16,119 +16,188 @@
 			<u-form-item :label-position="labelPositionText" label="专业" label-width="150" prop="subject">
 				<u-input type="text" v-model="model.subject" placeholder="请输入专业" ></u-input>
 			</u-form-item>
-			<u-form-item :label-position="labelPositionImg" label="上传图片" prop="photo" label-width="150" :border-bottom="false">
+			<u-form-item :label-position="labelPositionImg" label="上传图片" prop="photo" label-width="150">
 				<view class="form-upload">
-					<view @click="upload(1)" class="form-upload-item">
-						<view v-if="">
-							<image src="/static/runClient/imgadd.png" mode="aspectFit"></image>
+					<view class="form-upload-item">
+						<view v-if="list1.length>0" class="pre-item" v-for="(item, index) in list1" :key="index">
+							<image class="pre-item-image" :src="item.url" mode="aspectFill"></image>
+							<view class="u-delete-icon" @tap.stop="deleteItem(index,1)">
+								<u-icon name="close" size="20" color="#ffffff"></u-icon>
+							</view>
 						</view>
-						<view v-if="">
-							学生证正面
+						<view v-if="frontalPhoto.file_url" class="pre-item">
+							<image class="pre-item-image" :src="$fun.fileUrl(frontalPhoto.file_url)" mode="aspectFill"></image>
+							<view class="u-delete-icon" @tap.stop="frontalPhoto={}">
+								<u-icon name="close" size="20" color="#ffffff"></u-icon>
+							</view>
 						</view>
-						
+						<u-upload v-if="!frontalPhoto.file_url" ref="uUpload" :header="header" :max-count="1" :action="action" :auto-upload="true" :custom-btn="true" @on-list-change="onListChange" @on-success="onSuccess" :show-upload-list="false">
+							<view slot="addBtn" class="slot-btn" hover-class="slot-btn__hover" hover-stay-time="150">
+								<view>
+										<image src="/static/runClient/imgadd.png" class="form-upload-image" mode="aspectFit"></image>
+								</view>
+								<view v-if="list1.length==0">
+									学生证正面
+								</view>
+							</view>
+						</u-upload>
 					</view>
-					<view @click="upload(2)" class="form-upload-item" style="float: right;">
-						<view class="">
-							<image src="/static/runClient/imgadd.png" mode="aspectFit"></image>
+					<view class="form-upload-item" style="float: right;">
+						<view class="pre-item" v-for="(item, index) in list2" :key="index">
+							<image class="pre-item-image" :src="item.url" mode="aspectFill"></image>
+							<view class="u-delete-icon" @tap.stop="deleteItem(index,2)">
+								<u-icon name="close" size="20" color="#ffffff"></u-icon>
+							</view>
 						</view>
-						<view class="">
-							学生证反面
+						<view v-if="reversePhoto.file_url" class="pre-item">
+							<image class="pre-item-image" :src="$fun.fileUrl(reversePhoto.file_url)" mode="aspectFill"></image>
+							<view class="u-delete-icon" @tap.stop="reversePhoto={}">
+								<u-icon name="close" size="20" color="#ffffff"></u-icon>
+							</view>
 						</view>
+						<u-upload v-if="!reversePhoto.file_url" ref="uUpload2" :header="header" :max-count="1" :action="action" :auto-upload="true" :custom-btn="true" @on-list-change="onListChange2" @on-success="onSuccess2" :show-upload-list="false">
+							<view slot="addBtn" class="slot-btn" hover-class="slot-btn__hover" hover-stay-time="150">
+								<view>
+										<image src="/static/runClient/imgadd.png" class="form-upload-image" mode="aspectFit"></image>
+								</view>
+								<view v-if="list2.length==0">
+									学生证反面
+								</view>
+							</view>
+						</u-upload>
 					</view>
 				</view>
 			</u-form-item>
-			<view style="margin-top: 25px;">
-					<u-button @click="toPage()" :custom-style="customStyle" :hair-line="hairLin">立即提交</u-button>
+			<view @click="toPage()" style="margin-top: 25px;background: #FCF800;border-radius: 20px;border:none;text-align: center;padding-top: 5px;height: 30px;">
+					下一步
 			</view>
+			
 		</u-form>
 		</view>
-		
 		<u-action-sheet :list="actionSheetList" v-model="actionSheetShow" @click="actionSheetCallback"></u-action-sheet>
 	</view>
 </template>
 
 <script>
-	import {getDate} from '@/common/fun.js'
+	import {studentAuthView, studentAuthCreate, studentAuthUpdate} from '../../../common/api/runClient/auth.js'
+	import config from '../../../common/config.js'
 	
 	export default {
 		data() {
 			return {
 				labelPositionText:'left',
 				labelPositionImg:'top',
+				showGender:'',
 				model:{
-					school_id:'',
-					school_area_id:'',
-					faculty:'',
-					subject:'',
+					name:'',
+					gender:'',
 				},
+				frontalPhoto:{file_url:''},
+				reversePhoto:{file_url:''},
 				actionSheetShow: false,
 				actionSheetList: [
 					{
-						text: '男'
+						text: '男',
+						val: 1
 					},
 					{
-						text: '女'
+						text: '女',
+						val: 0
 					},
 					{
-						text: '保密'
+						text: '保密',
+						val: null
 					}
 				],
-				customStyle: {
-					background: '#FCF800',
-					borderRadius: '20px',
-					border:'none'
-				},
-				hairLin:false,
+				
 				stepList:[{
 					name: '实名认证'
-				}, {
-					name: '学生认证'
-				}, {
-					name: '提交成功'
-				}],
+					}, {
+						name: '学生认证'
+					}, {
+						name: '提交成功'
+					},
+				],
 				current: 1,
 				icon: 'checkmark',
 				mode: 'number',
 				activeColor: '#FFE400',
 				photo_f:null,
-				photo_b:null
+				photo_b:null,
+				action: config.baseUrl + '/pbl/index/fileupload',
+				header:{},
+				list1: [],
+				list2: [],
 			}
 		},
 		onLoad() {
-			this.selectorDefTime = getDate;
+			this.header['access-token']= uni.getStorageSync('access-token')
+			this.getData()
 		},
 		methods: {
-			submit(){
-				console.log(111)
+			toPage () {
+				this.submitData();
 			},
-			toPage(){
-				console.log(1111)
-				uni.navigateTo({
-				    url: './review'
-				});
-			},
-			selectValue(type){},
 			actionSheetCallback(index) {
-				// uni.hideKeyboard();
-				this.model.gender = this.actionSheetList[index].text;
+				let a = this.actionSheetList[index];
+				this.showGender = a.text
+				this.model.gender = a.val;
 			},
-			upload(type){
-				if (type == 1){
-					
+			onListChange(lists) {
+				this.list1 = lists;
+				console.log(this.list1)
+			},
+			onListChange2(lists) {
+				this.list2 = lists;
+				console.log(this.list2)
+			},
+			deleteItem(index,select) {
+				console.log(select);
+				if (select == 1) {
+					this.$refs.uUpload.remove(index);
+				}else{
+					this.$refs.uUpload2.remove(index);
 				}
-				uni.chooseImage({
-					count:1,
-					success: (chooseImageRes) => {
-						const tempFilePaths = chooseImageRes.tempFilePaths;
-						tempFilePaths.forEach(v => {
-							that.uploadImg('/public/fileupload',v).then(res =>{
-								var data = JSON.parse(res.data)
-								if(data.status == 200 ) {
-									that.imgList.push(data.data.file_url);
-								}
-							})
-						})
-					}
+			},
+			onSuccess(data, index, lists, name){
+				if (data.code == 200){
+					this.model.id_card_frontal_photo = data.data.id
+				}else{
+					uni.showToast({
+						icon: 'none',
+						title: data.message,
+						duration: 2000
+					});
+					throw ''
+				}
+			},
+			onSuccess2(data, index, lists, name){
+				if (data.code == 200){
+					this.model.id_card_reverse_photo = data.data.id
+				}else{
+					uni.showToast({
+						icon: 'none',
+						title: data.message,
+						duration: 2000
+					});
+					throw ''
+				}
+			},
+			async getData(){
+				let res = await studentAuthView()
+				this.model = res
+				this.showGender = res.gender == 1 ? '男' : '女'
+				this.frontalPhoto = res.frontalPhoto
+				this.reversePhoto = res.reversePhoto?res.reversePhoto:{}
+			},
+			async submitData(){
+				if (this.model.user_id){
+					await studentAuthUpdate(this.model)
+				}else{
+					await studentAuthCreate(this.model)
+				}
+				uni.navigateTo({
+				    url: '/pages/runClient/auth/student'
 				});
 			}
 		}
@@ -136,9 +205,7 @@
 </script>
 
 <style>
-	.form-upload{
-	}
-	.form-upload image{
+	.form-upload-image{
 		width: 30px;
 		height: 29px;
 		margin-top: 21px;
@@ -150,6 +217,37 @@
 		border: 1.5px solid #FFE400;
 		box-sizing: border-box;
 		height: 100px;
-		width: 140px;
+		width: 146px;
+	}
+	
+	.pre-item {
+		flex: 0 0 48.5%;
+		border-radius: 10rpx;
+		height: 100px;
+		overflow: hidden;
+		position: relative;
+		margin-bottom: 20rpx;
+	}
+	
+	.pre-item-image {
+		width: 100%;
+		height: 100px;
+	}
+	.u-delete-icon {
+		position: absolute;
+		top: 10rpx;
+		right: 10rpx;
+		z-index: 10;
+		background-color: $u-type-error;
+		border-radius: 100rpx;
+		width: 44rpx;
+		height: 44rpx;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+	.slot-btn{
+		width: 100%;
+		margin-left: 58%;
 	}
 </style>

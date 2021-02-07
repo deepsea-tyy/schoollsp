@@ -23,3 +23,27 @@ export function realNameAuthUpdate(data) {
 	token:true
   })
 }
+
+export function studentAuthView() {
+  return get({
+    url: '/user/student-auth/view',
+    params: {},
+	token:true
+  })
+}
+
+export function studentAuthCreate(data) {
+  return post({
+    url: '/user/student-auth/create',
+    params: data,
+	token:true
+  })
+}
+
+export function studentAuthUpdate(data) {
+  return post({
+    url: '/user/student-auth/update',
+    params: data,
+	token:true
+  })
+}

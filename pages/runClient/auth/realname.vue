@@ -107,7 +107,6 @@
 					}
 				],
 				
-				hairLin:false,
 				stepList:[{
 					name: '实名认证'
 					}, {
@@ -134,8 +133,6 @@
 		},
 		methods: {
 			toPage () {
-				console.log(this.model)
-				
 				this.submitData();
 			},
 			actionSheetCallback(index) {
