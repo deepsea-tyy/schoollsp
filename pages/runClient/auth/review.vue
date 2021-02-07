@@ -66,7 +66,7 @@
 			toPage(){
 				console.log(1111)
 				uni.navigateTo({
-				    url: '/pages/home/index'
+				    url: '/pages/runClient/order/index'
 				});
 			},
 			

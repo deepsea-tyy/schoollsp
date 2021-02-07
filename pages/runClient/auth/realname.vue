@@ -16,37 +16,59 @@
 			<u-form-item :label-position="labelPositionImg" label="上传图片" prop="photo" label-width="150">
 				<view class="form-upload">
 					<view class="form-upload-item">
-						<view>
-							<view class="pre-item" v-for="(item, index) in list1" :key="index">
-								<image class="pre-item-image" :src="item.url" mode="aspectFill"></image>
-								<view class="u-delete-icon" @tap.stop="deleteItem(index)">
-									<u-icon name="close" size="20" color="#ffffff"></u-icon>
+						<view v-if="list1.length>0" class="pre-item" v-for="(item, index) in list1" :key="index">
+							<image class="pre-item-image" :src="item.url" mode="aspectFill"></image>
+							<view class="u-delete-icon" @tap.stop="deleteItem(index,1)">
+								<u-icon name="close" size="20" color="#ffffff"></u-icon>
+							</view>
+						</view>
+						<view v-if="frontalPhoto.file_url" class="pre-item">
+							<image class="pre-item-image" :src="$fun.fileUrl(frontalPhoto.file_url)" mode="aspectFill"></image>
+							<view class="u-delete-icon" @tap.stop="frontalPhoto={}">
+								<u-icon name="close" size="20" color="#ffffff"></u-icon>
+							</view>
+						</view>
+						<u-upload v-if="!frontalPhoto.file_url" ref="uUpload" :header="header" :max-count="1" :action="action" :auto-upload="true" :custom-btn="true" @on-list-change="onListChange" @on-success="onSuccess" :show-upload-list="false">
+							<view slot="addBtn" class="slot-btn" hover-class="slot-btn__hover" hover-stay-time="150">
+								<view>
+										<image src="/static/runClient/imgadd.png" class="form-upload-image" mode="aspectFit"></image>
+								</view>
+								<view v-if="list1.length==0">
+									身份证正面
 								</view>
 							</view>
-							<u-upload ref="uUpload" :header="header" :max-count="1" :action="action" :auto-upload="false" :custom-btn="true" @on-list-change="onListChange" :show-upload-list="false">
-								<view slot="addBtn" class="slot-btn" hover-class="slot-btn__hover" hover-stay-time="150">
-									<image src="/static/runClient/imgadd.png" class="form-upload-image" mode="aspectFit"></image>
-								</view>
-							</u-upload>
-						</view>
-						<view v-if="list1.length==0">
-							身份证正面
-						</view>
-						
+						</u-upload>
 					</view>
 					<view class="form-upload-item" style="float: right;">
-						<view class="">
-							<image src="/static/runClient/imgadd.png" class="form-upload-image" mode="aspectFit"></image>
+						<view class="pre-item" v-for="(item, index) in list2" :key="index">
+							<image class="pre-item-image" :src="item.url" mode="aspectFill"></image>
+							<view class="u-delete-icon" @tap.stop="deleteItem(index,2)">
+								<u-icon name="close" size="20" color="#ffffff"></u-icon>
+							</view>
 						</view>
-						<view v-if="list2.length==0">
-							身份证反面
+						<view v-if="reversePhoto.file_url" class="pre-item">
+							<image class="pre-item-image" :src="$fun.fileUrl(reversePhoto.file_url)" mode="aspectFill"></image>
+							<view class="u-delete-icon" @tap.stop="reversePhoto={}">
+								<u-icon name="close" size="20" color="#ffffff"></u-icon>
+							</view>
 						</view>
+						<u-upload v-if="!reversePhoto.file_url" ref="uUpload2" :header="header" :max-count="1" :action="action" :auto-upload="true" :custom-btn="true" @on-list-change="onListChange2" @on-success="onSuccess2" :show-upload-list="false">
+							<view slot="addBtn" class="slot-btn" hover-class="slot-btn__hover" hover-stay-time="150">
+								<view>
+										<image src="/static/runClient/imgadd.png" class="form-upload-image" mode="aspectFit"></image>
+								</view>
+								<view v-if="list2.length==0">
+									身份证反面
+								</view>
+							</view>
+						</u-upload>
 					</view>
 				</view>
 			</u-form-item>
-			<view style="margin-top: 25px;">
-					<u-button :custom-style="customStyle" :onSuccess="onSuccess" :hair-line="hairLin" @click="toPage('/pages/auth/student')">下一步</u-button>
+			<view @click="toPage()" style="margin-top: 25px;background: #FCF800;border-radius: 20px;border:none;text-align: center;padding-top: 5px;height: 30px;">
+					下一步
 			</view>
+			
 		</u-form>
 		
 		<u-action-sheet :list="actionSheetList" v-model="actionSheetShow" @click="actionSheetCallback"></u-action-sheet>
@@ -54,7 +76,6 @@
 </template>
 
 <script>
-	import {getDate} from '@/common/fun.js'
 	import {realNameAuthView, realNameAuthCreate, realNameAuthUpdate} from '../../../common/api/runClient/auth.js'
 	import config from '../../../common/config.js'
 	
@@ -68,6 +89,8 @@
 					name:'',
 					gender:'',
 				},
+				frontalPhoto:{file_url:''},
+				reversePhoto:{file_url:''},
 				actionSheetShow: false,
 				actionSheetList: [
 					{
@@ -83,11 +106,7 @@
 						val: null
 					}
 				],
-				customStyle: {
-					background: '#FCF800',
-					borderRadius: '20px',
-					border:'none'
-				},
+				
 				hairLin:false,
 				stepList:[{
 					name: '实名认证'
@@ -103,7 +122,6 @@
 				activeColor: '#FFE400',
 				photo_f:null,
 				photo_b:null,
-				status:false,
 				action: config.baseUrl + '/pbl/index/fileupload',
 				header:{},
 				list1: [],
@@ -111,15 +129,13 @@
 			}
 		},
 		onLoad() {
-			this.selectorDefTime = getDate;
-			this.getData()
 			this.header['access-token']= uni.getStorageSync('access-token')
+			this.getData()
 		},
 		methods: {
-			toPage (path) {
+			toPage () {
 				console.log(this.model)
-				this.$refs.uUpload.upload();
-				return
+				
 				this.submitData();
 			},
 			actionSheetCallback(index) {
@@ -129,26 +145,59 @@
 			},
 			onListChange(lists) {
 				this.list1 = lists;
+				console.log(this.list1)
 			},
-			deleteItem(index) {
-				this.$refs.uUpload.remove(index);
+			onListChange2(lists) {
+				this.list2 = lists;
+				console.log(this.list2)
+			},
+			deleteItem(index,select) {
+				console.log(select);
+				if (select == 1) {
+					this.$refs.uUpload.remove(index);
+				}else{
+					this.$refs.uUpload2.remove(index);
+				}
 			},
 			onSuccess(data, index, lists, name){
-				console.log(data)
+				if (data.code == 200){
+					this.model.id_card_frontal_photo = data.data.id
+				}else{
+					uni.showToast({
+						icon: 'none',
+						title: data.message,
+						duration: 2000
+					});
+					throw ''
+				}
+			},
+			onSuccess2(data, index, lists, name){
+				if (data.code == 200){
+					this.model.id_card_reverse_photo = data.data.id
+				}else{
+					uni.showToast({
+						icon: 'none',
+						title: data.message,
+						duration: 2000
+					});
+					throw ''
+				}
 			},
 			async getData(){
 				let res = await realNameAuthView()
-				this.mode = res
-				this.status = res.length > 0 ? true:false
+				this.model = res
+				this.showGender = res.gender == 1 ? '男' : '女'
+				this.frontalPhoto = res.frontalPhoto
+				this.reversePhoto = res.reversePhoto?res.reversePhoto:{}
 			},
 			async submitData(){
-				if (this.status){
-					realNameAuthUpdate(this.model)
+				if (this.model.user_id){
+					await realNameAuthUpdate(this.model)
 				}else{
-					realNameAuthCreate(this.mode)
+					await realNameAuthCreate(this.model)
 				}
 				uni.navigateTo({
-				    url: path
+				    url: '/pages/runClient/auth/student'
 				});
 			}
 		}
@@ -196,5 +245,9 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
+	}
+	.slot-btn{
+		width: 100%;
+		margin-left: 58%;
 	}
 </style>

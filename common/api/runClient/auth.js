@@ -2,7 +2,7 @@ import {post, get} from '../request.js'
 
 export function realNameAuthView() {
   return get({
-    url: '/user/real-name-auth/create',
+    url: '/user/real-name-auth/view',
     params: {},
 	token:true
   })
