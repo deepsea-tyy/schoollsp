@@ -65,7 +65,7 @@
 					</view>
 				</view>
 			</u-form-item>
-			<view @click="toPage()" style="margin-top: 25px;background: #FCF800;border-radius: 20px;border:none;text-align: center;padding-top: 5px;height: 30px;">
+			<view @click="submitData" style="margin-top: 25px;background: #FCF800;border-radius: 20px;border:none;text-align: center;padding-top: 5px;height: 30px;">
 					下一步
 			</view>
 			
@@ -119,8 +119,6 @@
 				icon: 'checkmark',
 				mode: 'number',
 				activeColor: '#FFE400',
-				photo_f:null,
-				photo_b:null,
 				action: config.baseUrl + '/pbl/index/fileupload',
 				header:{},
 				list1: [],
@@ -132,9 +130,6 @@
 			this.getData()
 		},
 		methods: {
-			toPage () {
-				this.submitData();
-			},
 			actionSheetCallback(index) {
 				let a = this.actionSheetList[index];
 				this.showGender = a.text
@@ -184,7 +179,7 @@
 				let res = await realNameAuthView()
 				this.model = res
 				this.showGender = res.gender == 1 ? '男' : '女'
-				this.frontalPhoto = res.frontalPhoto
+				this.frontalPhoto = res.frontalPhoto?res.frontalPhoto:{}
 				this.reversePhoto = res.reversePhoto?res.reversePhoto:{}
 			},
 			async submitData(){

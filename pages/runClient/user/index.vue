@@ -27,7 +27,8 @@
 </template>
 
 <script>
-	import {userInfo, studentAuth, school} from '../../../common/api/runClient/user.js'
+	import {userInfo, school} from '../../../common/api/runClient/user.js'
+	import {studentAuthView} from '../../../common/api/runClient/auth.js'
 	export default {
 		data() {
 			return {
@@ -36,7 +37,7 @@
 						file_url:''
 					}
 				},
-				studentAuth:null
+				studentAuth:null,
 			}
 		},
 		onLoad() {
@@ -45,6 +46,9 @@
 		},
 		methods: {
 			toPage(path){
+				if (path == '/pages/runClient/auth/realname' && this.studentAuth !== null){
+					path = '/pages/runClient/auth/review'
+				}
 				uni.navigateTo({
 					url: path
 				});
@@ -55,15 +59,14 @@
 				this.userInfo = res
 			},
 			async getStudentAuth(){
-				let res = await studentAuth()
-				this.studentAuth = res.status
+				let res = await studentAuthView()
+				this.studentAuth = res.status ? res.status:0
 				this.getSchool()
 			},
 			async getSchool(){
 				let res = await school(this.userInfo.school_id)
 				this.school = res
 			}
-			
 		}
 	}
 </script>

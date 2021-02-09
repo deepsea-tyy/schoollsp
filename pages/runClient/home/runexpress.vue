@@ -2,21 +2,25 @@
 	<view style="background-color: #FFFFFF;">
 		<view style="padding: 12px 14px;background-color:  #FFFFFF; margin-bottom: 10px;">
 			<view class="content">
-				<textarea style="width: 100%;height: 80px;" placeholder="可直接将取件短信粘贴此处.示例:【菜鸟裹裹】您的快递12345678(XX快递)已送到，请及时取，取件码1234" />
+				<textarea style="width: 100%;height: 80px;" :placeholder="placeholder" />
 			</view>
 		</view>
 		
 		<u-cell-group>
-			<u-cell-item @click="selectValue(1)" icon="/static/runClient/qu.png" title="在哪里取货">{{model.start_place?model.start_place:"选择取货地址"}} <image src="/static/runClient/weizhi.png" class="bus-item-img" mode="aspectFit" /></u-cell-item>
-			<u-cell-item @click="selectValue(2)" icon="/static/runClient/song.png" title="送到哪里去">{{model.end_place?model.end_place:"选择取货地址"}} <image src="/static/runClient/weizhi.png" class="bus-item-img" mode="aspectFit" /></u-cell-item>
-			<u-cell-item @click="selectValue(3)" icon="" title="时间">请选择送达时间{{model.timeText}}</u-cell-item>
+			<u-cell-item v-if="type!=5" @click="selectValue(1)" icon="/static/runClient/qu.png" title="在哪里取货">{{start_place?start_place:"选择取货地址"}} <image src="/static/runClient/weizhi.png" class="bus-item-img" mode="aspectFit" /></u-cell-item>
+			<u-cell-item v-if="type!=5" @click="selectValue(2)" icon="/static/runClient/song.png" title="送到哪里去">{{end_place?end_place:"选择取货地址"}} <image src="/static/runClient/weizhi.png" class="bus-item-img" mode="aspectFit" /></u-cell-item>
+			<u-cell-item v-if="type==5" icon="/static/runClient/song.png" title="服务地点" :arrow="false"><input type="text" :value="model.end_place?model.end_place:'请输入服务地址'" />  </u-cell-item>
+			<u-cell-item @click="selectValue(3)" icon="" title="时间">{{timeText?timeText:'请选择送达时间'}}</u-cell-item>
+			
 			<view style="height: 10px;background-color: #F5F6FE;"></view>
-			<u-cell-item @click="selectValue(4)" icon="" title="物品重量">小于5斤</u-cell-item>
+			<u-cell-item v-if="type==2 || type==4" @click="selectValue(4)" icon="" title="物品重量">小于5斤</u-cell-item>
 			<u-cell-item @click="selectValue(5)" icon="" title="抢单限制">不限性别</u-cell-item>
 			<u-cell-item @click="selectValue(6)" icon="" title="订单超时">指定出发时间1小时内未接单</u-cell-item>
+			
 			<view style="height: 10px;background-color: #F5F6FE;"></view>
 			<u-cell-item @click="selectValue(7)" icon="" title="优惠券">暂无可用</u-cell-item>
-			<u-cell-item @click="selectValue(8)" icon="" title="小费">接单更快，服务更及时</u-cell-item>
+			<u-cell-item v-if="type!=5" @click="selectValue(8)" icon="" title="小费">接单更快，服务更及时</u-cell-item>
+			<u-cell-item v-if="type==5" @click="selectValue(9)" icon="" title="服务费用">¥30.00元</u-cell-item>
 		</u-cell-group>
 		
 		<view style="background-color: #FFFFFF;padding-left:15px;">
@@ -43,7 +47,7 @@
 			<view style="padding: 0 15px;font-size: 11px;color: #000000;">
 				<view style="position: relative;height: 30px;margin-top: 9px;">
 					<view style="position: absolute;top: 9px;left: 50%;transform: translate(-50%,-50%);;font-size: 12px;color: #000000;">费用明细</view>
-					<view @click="toPage()" style="float:right;color: #57B5FC;font-size: 10px;">计费规则</view>
+					<view @click="toPage('./feerules')" style="float:right;color: #57B5FC;font-size: 10px;">计费规则</view>
 				</view>
 				<view class="pop-item-line"></view>
 				<view class="pop-item">
@@ -73,6 +77,8 @@
 
 <script>
 	import {getDate} from '@/common/fun.js'
+	import {schoolAround,cost} from '../../../common/api/runClient/home.js'
+	import {studentAuthView} from '../../../common/api/runClient/auth.js'
 	
 	export default {
 		data() {
@@ -84,7 +90,6 @@
 					start_place:'',
 					end_place:'',
 					time:'',
-					timeText:'',
 					weight:'',
 					gender:'',
 					overtime:'',
@@ -107,36 +112,62 @@
 					area: false,
 					timestamp: true
 				},
+				placeholder:'',
+				type:0,
+				timeText:'',
+				start_place:'',
+				end_place:'',
+				cost:{}
 			}
 		},
-		onLoad() {
+		onLoad(parmas) {
+			if(parmas.type == 2){
+				this.placeholder = '可直接将取件短信粘贴此处.示例:【菜鸟裹裹】您的快递12345678(XX快递)已送到，请及时取，取件码1234'
+			}
+			if(parmas.type == 3){
+				this.placeholder = '请填写您的需求'
+			}
+			if(parmas.type == 4){
+				this.placeholder = '想让同学在食堂帮您带您什么...示例：七天便利店购买可比克薯片、酸奶、面包、打印文件等'
+			}
+			if(parmas.type == 5){
+				this.placeholder = '请输入服务内容...示例：游戏代练/陪玩、修电脑、装win10系统、课业辅导等'
+			}
+			let that = this
+			uni.$on('selectAddress',(options)=>{
+				that.end_place = options.address_name
+				that.model.end_place = options.address_id
+				uni.$off('selectAddress')
+			})
+			this.type = parmas.type
 			this.selectorDefTime = getDate;
+			this.getCost()
 		},
 		methods: {
 			submit(){
 				console.log(111)
 			},
-			toPage(){
+			toPage(path){
 				uni.navigateTo({
-				    url: './feerules'
+				    url: path
 				});
 			},
 			selectValue(type){
-				this.selectorShow = true
 				this.selectorType = type
 				this.selectorMode = 'selector'
 				this.selectorKey = null
 				
 				switch(type) {
 				     case 1:
-				        this.selectorRange = [3,2,1]
+						this.selectorKey = 'name'
+						this.getAround()
 				        break;
 				     case 2:
-				        
+				        this.toPage('/pages/runClient/user/address')
 				        break;
 				     case 3:
 						this.selectorMode = 'time'
-				        
+						this.selectorShow = true
 				        break;
 				     case 4:
 				        
@@ -147,10 +178,12 @@
 			selectCfm(e){
 				this.start_place = '';
 				if (this.selectorType == 1) {
-					this.model.start_place = this.selectorRange[e[0]]
+					this.model.start_place = this.selectorRange[e[0]]['id']
+					this.start_place = this.selectorRange[e[0]]['name']
 				}
 				if (this.selectorType == 2) {
-					this.model.end_place = this.selectorRange[e[0]]
+					this.model.end_place = this.selectorRange[e[0]]['id']
+					this.end_place = this.selectorRange[e[0]]['id']
 				}
 				if (this.selectorType == 3) {
 					this.model.time = e.timestamp
@@ -159,26 +192,25 @@
 					var month = date.getMonth() + 1;
 					var day = date.getDate();
 					if (year == e.year && month==e.month && day == e.day){
-						this.model.timeText = '今天 ' + e.hour + ':' + e.minute
+						this.timeText = '今天 ' + e.hour + ':' + e.minute
 					}else{
-						this.model.timeText = e.year + '-' + e.month + '-' + e.day + ' ' + e.hour + ':' + e.minute
+						this.timeText = e.year + '-' + e.month + '-' + e.day + ' ' + e.hour + ':' + e.minute
 					}
 				}
-				// if (this.mode == 'time') {
-				// 	if (this.params.year) this.input += e.year;
-				// 	if (this.params.month) this.input += '-' + e.month;
-				// 	if (this.params.day) this.input += '-' + e.day;
-				// 	if (this.params.hour) this.input += ' ' + e.hour;
-				// 	if (this.params.minute) this.input += ':' + e.minute;
-				// 	if (this.params.second) this.input += ':' + e.second;
-				// } else if (this.mode == 'region') {
-				// 	this.input = e.province.label + '-' + e.city.label + '-' + e.area.label;
-				// } else if (this.mode == 'selector') {
-				// 	this.input = this.range[e[0]];
-				// } else if (this.mode == 'multiSelector') {
-				// 	this.input = this.range[0][e[0]] + '-' + this.range[1][e[1]] + '-' + this.range[2][e[2]];
-				// }
-			}
+			},
+			async getAround(){
+				let std = await studentAuthView()
+				let res = await schoolAround(std.school_area_id ? std.school_area_id : std.school_id)
+				this.selectorRange = res.list
+				this.selectorShow = true
+			},
+			async getCost(){
+				let res = await cost()
+				console.log(res)
+				return
+				this.selectorRange = res.list
+				this.selectorShow = true
+			},
 		}
 	}
 </script>

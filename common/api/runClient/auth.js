@@ -47,3 +47,11 @@ export function studentAuthUpdate(data) {
 	token:true
   })
 }
+
+export function schoolList(data={}) {
+  return get({
+    url: '/runerrands/school/index',
+    params: data,
+	token:false
+  })
+}

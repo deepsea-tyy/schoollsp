@@ -4,8 +4,9 @@
 			<u-steps :list="stepList" :current="current" :mode="mode" :active-color="activeColor"></u-steps>
 		</view>
 		<u-cell-group>
-			<u-cell-item @click="selectValue(1)" icon="" title="选择校区">{{model.school_id?model.school_id:"选择学校"}} </u-cell-item>
-			<u-cell-item @click="selectValue(2)" icon="" title="选择校区">{{model.school_area_id?model.school_area_id:"选择校区"}} </u-cell-item>
+			<u-cell-item @click="toPage('/pages/runClient/auth/search')" icon="" title="所属学校">{{school_name?school_name:"选择学校"}} </u-cell-item>
+			<u-cell-item @click="toPage('/pages/runClient/auth/search')" icon="" title="校区">{{area_name?area_name:"选择校区"}} </u-cell-item>
+			<u-cell-item @click="selectValue" icon="" title="入学时间">{{enrollment_at}} </u-cell-item>
 		</u-cell-group>
 		
 		<view style="padding: 0 42rpx;">
@@ -15,6 +16,9 @@
 			</u-form-item>
 			<u-form-item :label-position="labelPositionText" label="专业" label-width="150" prop="subject">
 				<u-input type="text" v-model="model.subject" placeholder="请输入专业" ></u-input>
+			</u-form-item>
+			<u-form-item :label-position="labelPositionText" label="学号" label-width="150" prop="subject">
+				<u-input type="text" v-model="model.student_id" placeholder="请输入学号" ></u-input>
 			</u-form-item>
 			<u-form-item :label-position="labelPositionImg" label="上传图片" prop="photo" label-width="150">
 				<view class="form-upload">
@@ -68,47 +72,43 @@
 					</view>
 				</view>
 			</u-form-item>
-			<view @click="toPage()" style="margin-top: 25px;background: #FCF800;border-radius: 20px;border:none;text-align: center;padding-top: 5px;height: 30px;">
+			<view @click="submitData()" style="margin-top: 25px;background: #FCF800;border-radius: 20px;border:none;text-align: center;padding-top: 5px;height: 30px;">
 					下一步
 			</view>
 			
 		</u-form>
 		</view>
-		<u-action-sheet :list="actionSheetList" v-model="actionSheetShow" @click="actionSheetCallback"></u-action-sheet>
+		
+		<u-picker 
+			v-model="selectorShow" 
+			:mode="'time'" 
+			:defaultTime="selectorDefTime"
+			@confirm="selectCfm" 
+			:params="selectorPam"></u-picker>
 	</view>
 </template>
 
 <script>
 	import {studentAuthView, studentAuthCreate, studentAuthUpdate} from '../../../common/api/runClient/auth.js'
 	import config from '../../../common/config.js'
+	import {getDate} from '@/common/fun.js'
 	
 	export default {
 		data() {
 			return {
 				labelPositionText:'left',
 				labelPositionImg:'top',
-				showGender:'',
 				model:{
-					name:'',
-					gender:'',
+					school_id:null,
+					school_area_id:null,
+					faculty:null,
+					subject:null,
+					enrollment_at:null,
+					student_id:null,
 				},
-				frontalPhoto:{file_url:''},
-				reversePhoto:{file_url:''},
-				actionSheetShow: false,
-				actionSheetList: [
-					{
-						text: '男',
-						val: 1
-					},
-					{
-						text: '女',
-						val: 0
-					},
-					{
-						text: '保密',
-						val: null
-					}
-				],
+				enrollment_at:'',
+				frontalPhoto:{file_url:null},
+				reversePhoto:{file_url:null},
 				
 				stepList:[{
 					name: '实名认证'
@@ -122,37 +122,63 @@
 				icon: 'checkmark',
 				mode: 'number',
 				activeColor: '#FFE400',
-				photo_f:null,
-				photo_b:null,
 				action: config.baseUrl + '/pbl/index/fileupload',
 				header:{},
 				list1: [],
 				list2: [],
+				selectorShow:false,
+				selectorDefTime:null,
+				selectorPam: {
+					year: true,
+					month: true,
+					day: true,
+					hour: false,
+					minute: false,
+					second: false,
+					province: false,
+					city: false,
+					area: false,
+					timestamp: true
+				},
+				school_name:null,
+				area_name:null
 			}
 		},
-		onLoad() {
+		onLoad(options) {
 			this.header['access-token']= uni.getStorageSync('access-token')
 			this.getData()
+			this.selectorDefTime = getDate;
+			let that = this
+			uni.$on('selectSchool',(options)=>{
+				console.log(options,111111)
+				that.model.school_id = options.school_id
+				that.model.school_area_id = options.area_id
+				that.school_name = options.school_name
+				that.area_name = options.area_name ? options.area_name : '主校区'
+				uni.$off('selectSchool')
+			})
 		},
 		methods: {
-			toPage () {
-				this.submitData();
+			toPage (path) {
+				uni.navigateTo({
+				    url: path
+				});
 			},
-			actionSheetCallback(index) {
-				let a = this.actionSheetList[index];
-				this.showGender = a.text
-				this.model.gender = a.val;
+			selectValue(){
+				this.selectorShow = true
+			},
+			selectCfm(e){
+				this.model.enrollment_at = e.timestamp
+				this.enrollment_at = e.year + '-' + e.month + '-' + e.day
+				console.log(this.model)
 			},
 			onListChange(lists) {
 				this.list1 = lists;
-				console.log(this.list1)
 			},
 			onListChange2(lists) {
 				this.list2 = lists;
-				console.log(this.list2)
 			},
 			deleteItem(index,select) {
-				console.log(select);
 				if (select == 1) {
 					this.$refs.uUpload.remove(index);
 				}else{
@@ -161,7 +187,7 @@
 			},
 			onSuccess(data, index, lists, name){
 				if (data.code == 200){
-					this.model.id_card_frontal_photo = data.data.id
+					this.model.student_id_card_frontal_photo = data.data.id
 				}else{
 					uni.showToast({
 						icon: 'none',
@@ -173,7 +199,7 @@
 			},
 			onSuccess2(data, index, lists, name){
 				if (data.code == 200){
-					this.model.id_card_reverse_photo = data.data.id
+					this.model.student_id_card_reverse_photo = data.data.id
 				}else{
 					uni.showToast({
 						icon: 'none',
@@ -186,9 +212,10 @@
 			async getData(){
 				let res = await studentAuthView()
 				this.model = res
-				this.showGender = res.gender == 1 ? '男' : '女'
-				this.frontalPhoto = res.frontalPhoto
-				this.reversePhoto = res.reversePhoto?res.reversePhoto:{}
+				this.frontalPhoto = res.frontalPhoto?res.frontalPhoto:{}
+				this.reversePhoto = res.reversePhoto?res.reversePhoto:{},
+				this.school_name = res.school.name
+				this.area_name = res.schoolArea ? res.schoolArea.name : '主校区'
 			},
 			async submitData(){
 				if (this.model.user_id){
@@ -197,7 +224,7 @@
 					await studentAuthCreate(this.model)
 				}
 				uni.navigateTo({
-				    url: '/pages/runClient/auth/student'
+				    url: '/pages/runClient/auth/review'
 				});
 			}
 		}

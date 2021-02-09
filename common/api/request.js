@@ -43,7 +43,6 @@ export function get(data){
 	if (token){
 		header['access-token'] = uni.getStorageSync('access-token') || ''
 	}
-	// console.log(url,param,header);return
 	return request(url, params, 'GET', header)
 }
 

@@ -12,44 +12,44 @@
 		
 		<view class="bus">
 			<u-grid :col="2" :border="false">
-				<u-grid-item @click="toPage('/pages/home/runexpress')">
+				<u-grid-item @click="toPage('/pages/runClient/home/runexpress?type=2')">
 					<view class="bus-item-bg">
 						<view>
-								<view class="bus-item-text1">取快递</view>
-								<view class="bus-item-text2">顺丰菜鸟</view>
+							<view class="bus-item-text1">取快递</view>
+							<view class="bus-item-text2">顺丰菜鸟</view>
 						</view>
 						<view class="bus-item-img">
 							<image src="/static/runClient/bus1.png" class="bus-item-img" mode="aspectFit" />
 						</view>
 					</view>
 				</u-grid-item>
-				<u-grid-item @click="toPage('/pages/home/runtakeout')">
+				<u-grid-item @click="toPage('/pages/runClient/home/runexpress?type=3')">
 					<view class="bus-item-bg" style="background-color: #FFF5F6;">
 						<view>
-								<view class="bus-item-text1">外卖代拿</view>
-								<view class="bus-item-text2" style="background-color: #FF4966;">配送到寝</view>
+							<view class="bus-item-text1">外卖代拿</view>
+							<view class="bus-item-text2" style="background-color: #FF4966;">配送到寝</view>
 						</view>
 						<view class="bus-item-img">
 							<image src="/static/runClient/bus2.png" class="bus-item-img" mode="aspectFit" />
 						</view>
 					</view>
 				</u-grid-item>
-				<u-grid-item @click="toPage('/pages/home/runerrands')">
+				<u-grid-item @click="toPage('/pages/runClient/home/runexpress?type=4')">
 					<view class="bus-item-bg" style="background-color: #E6EFFA;">
 						<view>
-								<view class="bus-item-text1">校园跑腿</view>
-								<view class="bus-item-text2" style="background-color: #57B5FC;">代买代拿</view>
+							<view class="bus-item-text1">校园跑腿</view>
+							<view class="bus-item-text2" style="background-color: #57B5FC;">代买代拿</view>
 						</view>
 						<view class="bus-item-img">
 							<image src="/static/runClient/bus3.png" class="bus-item-img" mode="aspectFit" />
 						</view>
 					</view>
 				</u-grid-item>
-				<u-grid-item @click="toPage('/pages/home/runeotherhelp')">
+				<u-grid-item @click="toPage('/pages/runClient/home/runexpress?type=5')">
 					<view class="bus-item-bg" style="background-color: #EEF8F7;">
 						<view>
-								<view class="bus-item-text1">其他帮助</view>
-								<view class="bus-item-text2" style="background-color: #00C56C;">无所不能</view>
+							<view class="bus-item-text1">其他帮助</view>
+							<view class="bus-item-text2" style="background-color: #00C56C;">无所不能</view>
 						</view>
 						<view class="bus-item-img">
 							<image src="/static/runClient/bus4.png" class="bus-item-img" mode="aspectFit" />
@@ -109,17 +109,25 @@
 </template>
 
 <script>
+	import {studentAuthView} from '../../../common/api/runClient/auth.js'
 	export default {
 		data(){
 			return {
 				authCheckShow:true,
 			}
 		},
+		onLoad() {
+			this.getStudentAuth()
+		},
 		methods:{
 			toPage (path) {
 				uni.navigateTo({
 				    url: path
 				});
+			},
+			async getStudentAuth(){
+				let res = await studentAuthView()
+				this.authCheckShow = res.status == 1 ? false:true
 			},
 		}
 	}

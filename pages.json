@@ -146,6 +146,15 @@
             }
             
         }
+        ,{
+            "path" : "pages/runClient/auth/search",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "",
+                "enablePullDownRefresh": false
+            }
+            
+        }
     ],
 	"tabBar": {
 			"color": "#666666",

@@ -63,7 +63,7 @@
 				uni.setStorageSync('access-token', res.token)
 				uni.setStorageSync('access-token-duration', res.duration)
 				setTimeout(() => {
-					uni.switchTab({ url: '/pages/runClient/home/index'})
+					uni.navigateTo({ url: '/pages/runClient/home/index'})
 				}, 2000)
 			}
 		}
