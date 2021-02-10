@@ -16,28 +16,17 @@
 				created_store: 1
 			}
 		},
-		onLoad(option) {
-			// uni.showLoading({ title: '刷新中...' })
-			// this.$model.login({ openid: '' })
-			// .then(res => {
-			// 	uni.showToast({ title: '登陆成功' })
-			// 	setTimeout(() => {
-			// 		uni.navigateBack()
-			// 	}, 2000)
-			// 	this.isShow = true
-			// })
-		},
 		methods: {
 			test(){
-				let _this = this;
+				let that = this;
 				wx.login({
 				  success (res) {
-					_this.userLogin(res.code);
+					that.userLogin(res.code);
 				  }
 				})
 			},
 			getUserInfo(e) {
-				let _this = this;
+				let that = this;
 				let ret = e.detail;
 				this.uinfo = e.detail.userInfo
 				if (ret.errMsg == "getUserInfo:fail auth deny") {
@@ -47,7 +36,7 @@
 				} else if (ret.errMsg == "getUserInfo:ok") {
 					wx.login({
 					  success (res) {
-						_this.userLogin(res.code, _this.uinfo);
+						that.userLogin(res.code, that.uinfo);
 					  }
 					})
 				} else {
@@ -62,9 +51,9 @@
 				uni.showToast({ title: '登陆成功' })
 				uni.setStorageSync('access-token', res.token)
 				uni.setStorageSync('access-token-duration', res.duration)
-				setTimeout(() => {
-					uni.navigateTo({ url: '/pages/runClient/home/index'})
-				}, 2000)
+				uni.navigateTo({
+				    url: '/pages/runClient/home/index'
+				});
 			}
 		}
 	}

@@ -93,7 +93,7 @@ export function parseParam(param,key,encode){
 
 // 时间转换  年-月-日  时：分：秒
 
-export function formatDate(timestamp,num) {
+export function formatDate(timestamp,num=0) {
     timestamp = timestamp+'';
     timestamp = timestamp.length==10?timestamp*1000:timestamp;
     var date = new Date(timestamp);
