@@ -5,16 +5,7 @@ export function errorType (err) {
 	let codeType = [40001, 402, 502]
 	
 	if (err.errorCode == 50001) {
-		/* uni.showModal({
-			title: '温馨提示！',
-			content: '亲，您还没登录哟~~',
-			confirmText: '去登录',
-			success: res => {
-				if (res.confirm) {
-					uni.navigateTo({ url: '/pages/login/wxlogin'})
-				}
-			}
-		}) */
+		uni.navigateTo({ url: '/pages/login/wxlogin'})
 		return
 	}
 	

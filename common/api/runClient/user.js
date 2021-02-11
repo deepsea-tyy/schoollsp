@@ -58,6 +58,7 @@ export function shipAddressDelete(id) {
 export function coupon() {
   return get({
     url: '/promotion/coupon/index',
+	params: {scene:2},
     token:true
   })
 }
@@ -65,6 +66,13 @@ export function coupon() {
 export function userCoupon() {
   return get({
     url: '/promotion/coupon/user-coupon',
+    token:true
+  })
+}
+export function couponReceive(id) {
+  return get({
+    url: '/promotion/coupon/receive',
+	params: {promotion_id:id},
     token:true
   })
 }

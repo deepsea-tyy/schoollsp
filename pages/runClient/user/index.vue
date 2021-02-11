@@ -8,7 +8,7 @@
 				<view v-if="studentAuth === null" style="font-size: 12px;color: #666666;">未实名认证</view>
 				<view v-if="studentAuth == 0" style="font-size: 12px;color: #666666;">审核中</view>
 				<view v-if="studentAuth == 2" style="font-size: 12px;color: #666666;">审核失败</view>
-				<view v-if="studentAuth == 1" style="font-size: 12px;color: #666666;">学校</view>
+				<view v-if="studentAuth == 1" style="font-size: 12px;color: #666666;">{{school}}</view>
 			</view>
 		</view>
 		<view style="padding: 21px;">
@@ -38,6 +38,7 @@
 					}
 				},
 				studentAuth:null,
+				school:'',
 			}
 		},
 		onLoad() {
@@ -61,11 +62,7 @@
 			async getStudentAuth(){
 				let res = await studentAuthView()
 				this.studentAuth = res.status ? res.status:0
-				this.getSchool()
-			},
-			async getSchool(){
-				let res = await school(this.userInfo.school_id)
-				this.school = res
+				this.school = res.school?res.school.name:''
 			}
 		}
 	}

@@ -14,54 +14,83 @@
 			<view style="margin-top: 10px;font-size: 12px;color: #666666;">
 				<view style="text-align: center;float:left;margin-left: 15px;height: 15px;padding:0 6px">满{{item.condition.content}}元可用</view>
 				<view style="text-align: center;float:left;margin-left: 15px;">有效期至{{item.end_at}}</view>
-				<view @click="" style="float:right;margin-right: 14px;background-color: #FFE300;padding: 0 10px;border-radius: 3px;color: #333333;">领取</view>
+				<view @click="receive(item.id)" style="float:right;margin-right: 14px;background-color: #FFE300;padding: 0 10px;border-radius: 3px;color: #333333;">领取</view>
 			</view>
 		</view>
 		
 		<view class="item"  v-for="(item, index) in userCouponList">
 			<view class="clearfix">
-				<view style="font-size: 12px;color: #FF4C25;float:left;margin-left: 30px;width: 16px;height: 16px;text-align: center;">¥1</view>
-				<view style="float:left;margin-left: 30px;font-size: 15px;color: #333333;">新人优惠券</view>
+				<view style="font-size: 12px;color: #FF4C25;float:left;margin-left: 30px;width: 16px;height: 16px;text-align: center;">¥{{item.condition.result}}</view>
+				<view style="float:left;margin-left: 30px;font-size: 15px;color: #333333;">{{item.promotion.name}}</view>
 			</view>
 	
 			<view style="margin-top: 10px;font-size: 12px;color: #666666;">
-				<view style="text-align: center;float:left;margin-left: 15px;height: 15px;padding:0 6px">满3元可用</view> 
-				<view style="text-align: center;float:left;margin-left: 15px;">有效期至2020-12-23</view>
-				<view @click="" style="float:right;margin-right: 14px;background-color: #FF4C25;padding: 0 10px;border-radius: 3px;color: #FFFFFF;">使用</view>
+				<view style="text-align: center;float:left;margin-left: 15px;height: 15px;padding:0 6px">满{{item.condition.content}}元可用</view> 
+				<view style="text-align: center;float:left;margin-left: 15px;">有效期至{{item.end_at}}</view>
+				<view @click="useCoupon(item)" style="float:right;margin-right: 14px;background-color: #FF4C25;padding: 0 10px;border-radius: 3px;color: #FFFFFF;">使用</view>
 			</view>
 		</view>
 	</view>
 </template>
 
 <script>
-	import {coupon,userCoupon} from '../../../common/api/runClient/user.js'
+	import {coupon,userCoupon,couponReceive} from '../../../common/api/runClient/user.js'
 	
 	export default {
 		data() {
 			return {
 				couponList:[],
 				userCouponList:[],
+				type:1,
 			}
 		},
 		onLoad(parmas) {
 			this.getCoupon()
 			this.getUserCcoupon()
+			this.type = parmas.type?parmas.type:1
 		},
 		methods: {
 			async getCoupon(){
 				let res = await coupon()
+				this.couponList = []
 				res.forEach((item, index) => {
 					item.end_at = this.$fun.formatDate(item.end_at)
-					this.couponList.push(item)
+					if(!item.receive_status){
+						this.couponList.push(item)
+					}
 				})
 			},
 			async getUserCcoupon(){
 				let res = await userCoupon()
-				res.forEach((item, index) => {
+				this.userCouponList = []
+				res.list.forEach((item, index) => {
 					item.end_at = this.$fun.formatDate(item.end_at)
 					this.userCouponList.push(item)
+					
 				})
 			},
+			async receive(id){
+				let res = await couponReceive(id)
+				this.getCoupon()
+				this.getUserCcoupon()
+				uni.showToast({
+					title:'领取成功',  
+					icon:'none'  
+				});  
+			},
+			useCoupon(item){
+				if(this.type == 2){
+					uni.$emit('selectCoupon',{
+						coupon_id:item.id,
+						coupon_result:item.condition.result
+					})
+					uni.navigateBack()
+				}else{
+					uni.navigateTo({
+						url:'/pages/runClient/home/index'
+					})
+				}
+			}
 		}
 	}
 </script>

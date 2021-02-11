@@ -49,11 +49,13 @@
 	export default {
 		data() {
 			return {
-				list:[]
+				list:[],
+				type:null
 			}
 		},
-		onLoad() {
+		onLoad(params) {
 			this.getAddres()
+			this.type = params.type ? params.type:null
 		},
 		methods: {
 			toPage(path){
@@ -74,10 +76,16 @@
 				this.list.splice(index,1)
 			},
 			selectAddress(index){
+				if(!this.type){
+					return
+				}
 				let name = this.list[index]['school']+(this.list[index]['school_area']?this.list[index]['school_area']:'')+' '+this.list[index]['building_no']+'号楼'+this.list[index]['floor']+this.list[index]['house_number']
+				let f = this.list[index]['floor'].substr(0,1);
+				let fs = ['一', '二', '三', '四']
 				uni.$emit('selectAddress',{
 					address_id:this.list[index]['id'],
 					address_name:name,
+					floorCost:(f && fs.indexOf(f)==-1) ? 1:0,
 				})
 				uni.navigateBack()
 			}

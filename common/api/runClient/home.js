@@ -11,6 +11,20 @@ export function schoolAround(id) {
 export function cost() {
   return get({
     url: '/runerrands/cost/view',
-	token:false
+	token:true
+  })
+}
+export function orderCreate(data) {
+  return post({
+    url: '/runerrands/order/create',
+	params: data,
+	token:true
+  })
+}
+export function orderPay(data) {
+  return get({
+    url: '/pay/pay-setting/pay-params',
+	params: data,
+	token:true
   })
 }

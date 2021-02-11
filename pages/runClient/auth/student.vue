@@ -150,7 +150,6 @@
 			this.selectorDefTime = getDate;
 			let that = this
 			uni.$on('selectSchool',(options)=>{
-				console.log(options,111111)
 				that.model.school_id = options.school_id
 				that.model.school_area_id = options.area_id
 				that.school_name = options.school_name

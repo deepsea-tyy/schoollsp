@@ -2,7 +2,7 @@
 	<view style="background-color: #FFFFFF;">
 		<view style="padding: 12px 14px;background-color:  #FFFFFF; margin-bottom: 10px;">
 			<view class="content">
-				<textarea style="width: 100%;height: 80px;" :placeholder="placeholder" />
+				<textarea style="width: 100%;height: 80px;" v-model="model.content" :placeholder="placeholder" />
 			</view>
 		</view>
 		
@@ -18,14 +18,14 @@
 			<u-cell-item @click="selectValue(6)" icon="" title="订单超时">指定出发时间 <text style="color: #FF770B;">{{model.overtime}}小时</text> 内未接单</u-cell-item>
 			
 			<view style="height: 10px;background-color: #F5F6FE;"></view>
-			<u-cell-item @click="selectValue(7)" icon="" title="优惠券">暂无可用</u-cell-item>
+			<u-cell-item @click="selectValue(7)" icon="" title="优惠券">{{coupon_result? ('减 ¥ ' + coupon_result) :'暂无可用'}}</u-cell-item>
 			<u-cell-item v-if="type!=5" @click="selectValue(8)" icon="" title="小费">{{model.tip?('¥ '+ model.tip) :'接单更快，服务更及时'}}</u-cell-item>
 			<u-cell-item v-if="type==5" @click="selectValue(9)" icon="" title="服务费用">¥30.00元</u-cell-item>
 		</u-cell-group>
 		
 		<view style="background-color: #FFFFFF;padding-left:15px;">
-			<view style="float:left;font-size: 14px;color: #333333;margin-top: 16px;">跑腿费 <text style="font-size: 20px;color: #FF0000;"> ¥ 4.00</text></view>
-			<view style="float:right;font-size: 17px;color: #343433;margin-left: 17px;background: #FFE300;padding: 12px 22px;">立即支付</view>
+			<view style="float:left;font-size: 14px;color: #333333;margin-top: 16px;">{{money?'跑腿费':''}} <text style="font-size: 20px;color: #FF0000;"> {{money?'¥ '+money:''}}</text></view>
+			<view @click="pay" style="float:right;font-size: 17px;color: #343433;margin-left: 17px;background: #FFE300;padding: 12px 22px;">立即支付</view>
 			<view @click="popShow=true;popType=1" style="float:right;font-size: 12px;color: #666666;margin-top: 16px;">
 				明细 
 				<view style="padding-top: 2px;float: right;">
@@ -52,18 +52,43 @@
 				<view class="pop-item-line"></view>
 				<view class="pop-item">
 					<view style="float:left;">基础配送费</view>
-					<view style="float:right;">¥2.00</view>
+					<view style="float:right;">¥{{cost.basic_cost}}</view>
 				</view>
 				<view class="pop-item-line"></view>
-				<view class="pop-item">
-					<view style="float:left;">基础配送费</view>
-					<view style="float:right;">¥2.00</view>
+				<view v-if="weightPrice" class="pop-item">
+					<view style="float:left;">重量附加</view>
+					<view style="float:right;">¥{{weightPrice}}</view>
 				</view>
-				<view class="pop-item-line"></view>
+				<view v-if="weightPrice" class="pop-item-line"></view>
+				<view v-if="time_cost" class="pop-item">
+					<view style="float:left;">特殊时段费</view>
+					<view style="float:right;">¥{{time_cost==1?cost.lunch_time_cost:cost.dinner_time_cost}}</view>
+				</view>
+				<view v-if="time_cost" class="pop-item-line"></view>
+				<view v-if="floorCost" class="pop-item">
+					<view style="float:left;">配送难度费</view>
+					<view style="float:right;">¥{{cost.difficulty_cost}}</view>
+				</view>
+				<view v-if="floorCost" class="pop-item-line"></view>
+				<view v-if="cost.setting.is_weather_cist" class="pop-item">
+					<view style="float:left;">特殊天气费</view>
+					<view style="float:right;">¥{{cost.weather_cist}}</view>
+				</view>
+				<view v-if="cost.setting.is_weather_cist" class="pop-item-line"></view>
+				<view v-if="model.tip" class="pop-item">
+					<view style="float:left;">小费</view>
+					<view style="float:right;">¥{{model.tip}}</view>
+				</view>
+				<view v-if="model.tip" class="pop-item-line"></view>
+				<view v-if="coupon_result" class="pop-item">
+					<view style="float:left;">优惠券</view>
+					<view style="float:right;">-¥{{coupon_result}}</view>
+				</view>
+				<view v-if="coupon_result" class="pop-item-line"></view>
 			</view>
 			<view v-if="popType==1" style="background-color: #FFFFFF;padding-left:15px;">
-				<view style="float:left;font-size: 14px;color: #333333;margin-top: 16px;">跑腿费 <text style="font-size: 20px;color: #FF0000;"> ¥ 4.00</text></view>
-				<view style="float:right;font-size: 17px;color: #343433;margin-left: 17px;background: #FFE300;padding: 12px 22px;">立即支付</view>
+				<view style="float:left;font-size: 14px;color: #333333;margin-top: 16px;">{{money?'跑腿费':''}} <text style="font-size: 20px;color: #FF0000;"> {{money?'¥ '+money:''}}</text></view>
+				<view @click="pay" style="float:right;font-size: 17px;color: #343433;margin-left: 17px;background: #FFE300;padding: 12px 22px;">立即支付</view>
 				<view @click="popShow=false" style="float:right;font-size: 12px;color: #666666;margin-top: 16px;">
 					明细 
 					<view style="padding-top: 2px;float: right;">
@@ -86,7 +111,7 @@
 				<view style="overflow: hidden;">
 					<view v-for="(item, index) in tips" class="tip-item" :style="tipActiveIndex==index?'background: rgba(255, 227, 0, 0.5)':''" @click="setTips(index)" >{{item.text}}</view>
 				</view>
-				<input type="text" :value="model.tip" placeholder="其他金额" style="text-align: center;"/>
+				<input type="text" @input="onInput" :value="input" placeholder="其他金额" style="text-align: center;"/>
 				
 				<view @click="popShow=false" style="margin-top: 20px;background: #FFE300;text-align: center;height: 42px;padding-top: 10px;border-radius: 5px;">
 					确定
@@ -100,7 +125,7 @@
 
 <script>
 	import {getDate} from '@/common/fun.js'
-	import {schoolAround,cost} from '../../../common/api/runClient/home.js'
+	import {schoolAround,cost,orderCreate,orderPay} from '../../../common/api/runClient/home.js'
 	import {studentAuthView} from '../../../common/api/runClient/auth.js'
 	
 	export default {
@@ -118,6 +143,10 @@
 					gender:null,
 					overtime:1,
 					tip:null,
+					ship_id:null,
+					type:null,
+					coupon_ids:[],
+					pay_type:'lite',
 				},
 				selectorMode: 'selector',
 				selectorRange:[],
@@ -186,6 +215,12 @@
 					},
 				],
 				tipActiveIndex:-1,
+				coupon_result:'',
+				input:'',
+				money:0.00,
+				weightPrice:0.00,
+				time_cost:0,
+				floorCost:0,
 			}
 		},
 		onLoad(parmas) {
@@ -203,18 +238,32 @@
 			}
 			let that = this
 			uni.$on('selectAddress',(options)=>{
+				console.log(options)
 				that.end_place = options.address_name
-				that.model.end_place = options.address_id
+				that.model.ship_id = options.address_id
+				that.floorCost = options.floorCost
 				uni.$off('selectAddress')
+				this.setMoney()
 			})
 			this.model.type = parmas.type
+			this.type = parmas.type
 			this.selectorDefTime = getDate;
+			
+			uni.$on('selectCoupon',(options)=>{
+				that.model.coupon_ids = [options.coupon_id]
+				that.coupon_result = options.coupon_result
+				uni.$off('selectCoupon')
+				this.setMoney()
+			})
+			this.getCost()
 		},
 		methods: {
 			setTips(index){
 				this.model.tip = this.tips[index]['val']
 				this.tipActiveIndex = index
 				this.othTip = ''
+				this.input = ''
+				this.setMoney()
 			},
 			toPage(path){
 				uni.navigateTo({
@@ -231,7 +280,7 @@
 						this.getAround()
 				        break;
 				     case 2:
-				        this.toPage('/pages/runClient/user/address')
+				        this.toPage('/pages/runClient/user/address?type=1')
 				        break;
 				     case 3:
 						this.selectorMode = 'time'
@@ -239,7 +288,8 @@
 				        break;
 				     case 4:
 						this.selectorKey = 'title'
-						this.getCost()
+						this.selectorRange = this.cost.weithtCost
+						this.selectorShow = true
 				        break;
 				     case 5:
 						this.actionSheetShow = true
@@ -249,11 +299,12 @@
 						this.popType = 2
 				        break;
 				     case 7:
-				        this.toPage('/pages/runClient/user/coupons')
+				        this.toPage('/pages/runClient/user/coupons?type=2')
 				        break;
 				     case 8:
 						this.popShow = true
 						this.popType = 3
+				        break;
 				     case 9:
 				        break;
 				        
@@ -261,7 +312,6 @@
 				} 
 			},
 			selectCfm(e){
-				this.start_place = '';
 				if (this.selectorType == 1) {
 					this.model.start_place = this.selectorRange[e[0]]['id']
 					this.start_place = this.selectorRange[e[0]]['name']
@@ -272,10 +322,10 @@
 				}
 				if (this.selectorType == 3) {
 					this.model.time = e.timestamp
-					var date = new Date();
-					var year = date.getFullYear();
-					var month = date.getMonth() + 1;
-					var day = date.getDate();
+					let date = new Date();
+					let year = date.getFullYear();
+					let month = date.getMonth() + 1;
+					let day = date.getDate();
 					if (month==e.month && day == e.day){
 						this.timeText = '今天 ' + e.hour + ':' + e.minute
 					}else{
@@ -285,6 +335,8 @@
 				if (this.selectorType == 4) {
 					this.model.weight = this.selectorRange[e[0]]['id']
 					this.weight = this.selectorRange[e[0]]['title']
+					this.weightPrice = this.selectorRange[e[0]]['price']
+					this.setMoney()
 				}
 			},
 			async getAround(){
@@ -296,15 +348,66 @@
 			async getCost(){
 				let res = await cost()
 				this.cost = res
-				this.selectorRange = res.weithtCost
-				this.selectorShow = true
+				this.setMoney();
 			},
 			actionSheetCallback(index) {
 				let a = this.actionSheetList[index];
 				this.gender = a.text
 				this.model.gender = a.val;
 			},
+			onInput(e){
+				this.model.tip = e.detail.value
+				this.tipActiveIndex = -1
+				this.setMoney()
+			},
+			setMoney(){
+				let date = new Date();
+				let hour = date.getHours();
+				if(hour<13 && hour>=11){
+					this.time_cost =1
+				}
+				if(hour<19 && hour>=17){
+					this.time_cost =2
+				}
+				this.money = parseFloat(this.cost.basic_cost) 
+				+ ((this.cost.setting.is_lunch_cost || !this.cost.setting) && this.time_cost == 1 ? parseFloat(this.cost.lunch_time_cost):0)
+				+ ((this.cost.setting.is_dinner_cost|| !this.cost.setting) && this.time_cost == 2 ? parseFloat(this.cost.dinner_time_cost):0)
+				+ (this.cost.setting.is_weather_cist? parseFloat(this.cost.weather_cist):0)
+				
+				if(this.floorCost){
+					this.money += (this.cost.setting.is_difficulty_cost ? parseFloat(this.cost.difficulty_cost):0)
+				}
+				if(this.model.tip){
+					this.money +=parseFloat(this.model.tip)
+				}
+				if(this.model.weight){
+					this.money += parseFloat(this.weightPrice)
+				}
+				if(this.coupon_result>0){
+					this.money -= parseFloat(this.coupon_result)
+				}
+			},
+			async pay(){
+				let res = await orderCreate(this.model)
+				let pay = await orderPay({order_id:res.id,scene:2,pay_platform:2,pay_type:'lite'})
+				let that = this
+				uni.requestPayment({
+				    provider: 'wxpay',
+				    timeStamp: pay.timeStamp,
+				    nonceStr: pay.nonceStr,
+				    package: pay.package,
+				    signType: pay.signType,
+				    paySign: pay.paySign,
+				    success: function (res) {
+				        that.toPage('/pages/runClient/order/index')
+				    },
+				    fail: function (err) {
+				        console.log('fail:' + JSON.stringify(err));
+				    }
+				});
+			}
 		}
+		
 	}
 </script>
 
