@@ -47,6 +47,11 @@
 		},
 		methods: {
 			toPage(path){
+				if(path == '/pages/runClient/order/index'){
+					uni.switchTab({
+						url:path
+					})
+				}
 				if (path == '/pages/runClient/auth/realname' && this.studentAuth !== null){
 					path = '/pages/runClient/auth/review'
 				}

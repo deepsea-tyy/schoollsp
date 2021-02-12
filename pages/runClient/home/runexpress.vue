@@ -9,7 +9,7 @@
 		<u-cell-group>
 			<u-cell-item v-if="type!=5" @click="selectValue(1)" icon="/static/runClient/qu.png" title="在哪里取货">{{start_place?start_place:"选择取货地址"}} <image src="/static/runClient/weizhi.png" class="bus-item-img" mode="aspectFit" /></u-cell-item>
 			<u-cell-item v-if="type!=5" @click="selectValue(2)" icon="/static/runClient/song.png" title="送到哪里去">{{end_place?end_place:"选择取货地址"}} <image src="/static/runClient/weizhi.png" class="bus-item-img" mode="aspectFit" /></u-cell-item>
-			<u-cell-item v-if="type==5" icon="/static/runClient/song.png" title="服务地点" :arrow="false"><input type="text" :value="model.end_place?model.end_place:'请输入服务地址'" />  </u-cell-item>
+			<u-cell-item v-if="type==5" icon="/static/runClient/song.png" title="服务地点" :arrow="false"><input type="text" v-model="model.end_place" placeholder="请输入服务地址" />  </u-cell-item>
 			<u-cell-item @click="selectValue(3)" icon="" title="时间"><text style="color: #FF770B;">{{timeText}}</text>{{timeText?'':'请选择送达时间'}}</u-cell-item>
 			
 			<view style="height: 10px;background-color: #F5F6FE;"></view>
@@ -20,7 +20,7 @@
 			<view style="height: 10px;background-color: #F5F6FE;"></view>
 			<u-cell-item @click="selectValue(7)" icon="" title="优惠券">{{coupon_result? ('减 ¥ ' + coupon_result) :'暂无可用'}}</u-cell-item>
 			<u-cell-item v-if="type!=5" @click="selectValue(8)" icon="" title="小费">{{model.tip?('¥ '+ model.tip) :'接单更快，服务更及时'}}</u-cell-item>
-			<u-cell-item v-if="type==5" @click="selectValue(9)" icon="" title="服务费用">¥30.00元</u-cell-item>
+			<u-cell-item v-if="type==5" @click="selectValue(9)" icon="" title="服务费用">{{model.samount? ('¥'+model.samount+'元'):''}}</u-cell-item>
 		</u-cell-group>
 		
 		<view style="background-color: #FFFFFF;padding-left:15px;">
@@ -43,7 +43,7 @@
 			@confirm="selectCfm" 
 			:default-selector="[0]" 
 			:range="selectorRange"></u-picker>
-		<u-popup v-model="popShow" mode="bottom">
+		<u-popup v-model="popShow" mode="bottom" @close="setMoney()">
 			<view v-if="popType==1" style="padding: 0 15px;font-size: 11px;color: #000000;">
 				<view style="position: relative;height: 30px;margin-top: 9px;">
 					<view style="position: absolute;top: 9px;left: 50%;transform: translate(-50%,-50%);;font-size: 12px;color: #000000;">费用明细</view>
@@ -85,6 +85,11 @@
 					<view style="float:right;">-¥{{coupon_result}}</view>
 				</view>
 				<view v-if="coupon_result" class="pop-item-line"></view>
+				<view v-if="model.samount" class="pop-item">
+					<view style="float:left;">服务费用</view>
+					<view style="float:right;">¥{{model.samount}}</view>
+				</view>
+				<view v-if="model.samount" class="pop-item-line"></view>
 			</view>
 			<view v-if="popType==1" style="background-color: #FFFFFF;padding-left:15px;">
 				<view style="float:left;font-size: 14px;color: #333333;margin-top: 16px;">{{money?'跑腿费':''}} <text style="font-size: 20px;color: #FF0000;"> {{money?'¥ '+money:''}}</text></view>
@@ -99,8 +104,8 @@
 			<view v-if="popType==2" style="padding: 20px 13px;">
 				<view style="margin-bottom: 20px;color: #000000;font-size: 18px;">订单超时</view>
 				<view style="padding: 0 20px;">
-					<view style="text-align: center;color: #FFE300;height: 20px;margin-bottom: 10px;"> <text v-if="model.overtime" > {{model.overtime}}小时</text></view>
-					<u-slider v-model="model.overtime" :max="24" :active-color="'#FFE300'"></u-slider>
+					<view style="text-align: center;color: #FFE300;height: 20px;margin-bottom: 10px;"> <text v-if="model.overtime" > {{model.overtime}}分钟</text></view>
+					<u-slider v-model="model.overtime" :active-color="'#FFE300'"></u-slider>
 				</view>
 				<view @click="popShow=false" style="background: #FFE300;text-align: center;height: 42px;padding-top: 10px;margin-top: 40px;border-radius: 5px;">
 					确定
@@ -113,6 +118,19 @@
 				</view>
 				<input type="text" @input="onInput" :value="input" placeholder="其他金额" style="text-align: center;"/>
 				
+				<view @click="popShow=false" style="margin-top: 20px;background: #FFE300;text-align: center;height: 42px;padding-top: 10px;border-radius: 5px;">
+					确定
+				</view>
+			</view>
+			<view v-if="popType==5" style="padding: 20px 13px">
+				<view style="color: #000000;font-size: 18px;">预估费用</view>
+				<view style="margin-bottom: 16px;color: #000000;font-size: 12px;">实际费用在收货后与骑手结清</view>
+				<view style="overflow: hidden;">
+					<view style="float: left;margin-right: 3px;padding-top: 5px;">¥</view>
+					<view style="float: left;">
+					<u-input v-model="model.samount" :type="'number'" :border="border" :placeholder="'服务金额'"/>
+					</view>
+				</view>
 				<view @click="popShow=false" style="margin-top: 20px;background: #FFE300;text-align: center;height: 42px;padding-top: 10px;border-radius: 5px;">
 					确定
 				</view>
@@ -147,6 +165,7 @@
 					type:null,
 					coupon_ids:[],
 					pay_type:'lite',
+					samount:null,
 				},
 				selectorMode: 'selector',
 				selectorRange:[],
@@ -224,21 +243,24 @@
 			}
 		},
 		onLoad(parmas) {
+			let title = '取快递'
 			if(parmas.type == 2){
 				this.placeholder = '可直接将取件短信粘贴此处.示例:【菜鸟裹裹】您的快递12345678(XX快递)已送到，请及时取，取件码1234'
 			}
 			if(parmas.type == 3){
 				this.placeholder = '请填写您的需求'
+				title = '外卖代拿'
 			}
 			if(parmas.type == 4){
 				this.placeholder = '想让同学在食堂帮您带您什么...示例：七天便利店购买可比克薯片、酸奶、面包、打印文件等'
+				title = '校园跑腿'
 			}
 			if(parmas.type == 5){
 				this.placeholder = '请输入服务内容...示例：游戏代练/陪玩、修电脑、装win10系统、课业辅导等'
+				title = '其他帮助'
 			}
 			let that = this
 			uni.$on('selectAddress',(options)=>{
-				console.log(options)
 				that.end_place = options.address_name
 				that.model.ship_id = options.address_id
 				that.floorCost = options.floorCost
@@ -256,6 +278,9 @@
 				this.setMoney()
 			})
 			this.getCost()
+			uni.setNavigationBarTitle({
+				title:title
+			});
 		},
 		methods: {
 			setTips(index){
@@ -306,6 +331,8 @@
 						this.popType = 3
 				        break;
 				     case 9:
+						this.popShow = true
+						this.popType = 5
 				        break;
 				        
 				     default:

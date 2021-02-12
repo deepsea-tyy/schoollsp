@@ -47,13 +47,13 @@
 				}
 			},
 			async userLogin(code, uinfo) {
-				let res = await xcxLoginByCode2({code:code,uinfo:{avatarUrl:uinfo.avatarUrl,gender:uinfo.gender,nickname:uinfo.nickName}})
+				let res = await xcxLoginByCode2({scene:2,code:code,uinfo:{avatarUrl:uinfo.avatarUrl,gender:uinfo.gender,nickname:uinfo.nickName}})
 				uni.showToast({ title: '登陆成功' })
 				uni.setStorageSync('access-token', res.token)
 				uni.setStorageSync('access-token-duration', res.duration)
-				uni.navigateTo({
-				    url: '/pages/runClient/home/index'
-				});
+				uni.switchTab({
+					url:'/pages/runClient/home/index'
+				})
 			}
 		}
 	}

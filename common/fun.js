@@ -10,7 +10,14 @@ export function errorType (err) {
 	}
 	
 	if (!codeType.includes(err.errorCode)) {
-		uni.showToast({ title: err.message, icon: 'none' })
+		let msg = '';
+		if(typeof(err.message) == 'object'){
+			for (let key in err.message) {
+				msg = err.message[key][0]
+				break
+			}
+		}
+		uni.showToast({ title: msg ? msg : err.message, icon: 'none' })
 	}
 	
 	/**
@@ -102,16 +109,50 @@ export function formatDate(timestamp,num=0) {
     if(num==0){
         return y + '-' + m + '-' + d;  
     }else if(num==1){
-        return y + '-' + m + '-' + d +' '+ h +':'+ minute +':' + second;  
+        return y + '-' + m + '-' + d +' '+ h +':'+ minute;  
     }else if(num==2){
+        return y + '-' + m + '-' + d +' '+ h +':'+ minute +':' + second;  
+    }else if(num == 3){
+		return y + '年' + m + '月' + d +'日 ';
+	}else if(num==4){
         return y + '年' + m + '月' + d +'日 '+ h +':'+ minute;  
-    }else if(num==3){
-		return h
-	}else if(num == 4){
-		return d +'天'+ h +'小时'+ minute + '分';
-	}else if(num == 5){
+    }else if(num==5){
+        return y + '年' + m + '月' + d +'日 '+ h +':'+ minute +':' + second;
+    }else if(num==6){
+		return h +':'+ minute ;
+	}else if(num==7){
 		return h +':'+ minute + ':' + second;
 	}
+}
+
+/* stringTime为:年-月-日 时:分:秒 */
+export function friendlyFormatTime(stringTime) {
+    let minute = 1000 * 60;
+    let hour = minute * 60;
+    let day = hour * 24;
+    let week = day * 7;
+    let month = day * 30;
+    let time1 = new Date().getTime(); //当前的时间戳
+    let time2 = Date.parse(new Date(stringTime)); //指定时间的时间戳
+    let time = time1 - time2;
+
+    let result = null;
+    if (time < 0) {
+        result = '--';
+    } else if (time / month >= 1) {
+        result = parseInt(time / month) + '月前';
+    } else if (time / week >= 1) {
+        result = parseInt(time / week) + '周前';
+    } else if (time / day >= 1) {
+        result = parseInt(time / day) + '天前';
+    } else if (time / hour >= 1) {
+        result = parseInt(time / hour) + '小时前';
+    } else if (time / minute >= 1) {
+        result = parseInt(time / minute) + '分钟前';
+    } else {
+        result = '刚刚';
+    }
+    return result;
 }
 // 当前时间格式化
 export function dateType(num) {

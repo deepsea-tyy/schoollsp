@@ -122,7 +122,7 @@
 		    "path" : "pages/runClient/home/runexpress",
 		    "style" :
 		    {
-		        "navigationBarTitleText": "取快递",
+		        "navigationBarTitleText": "",
 				"navigationBarBackgroundColor": "#fff",
 		        "enablePullDownRefresh": false,
 				"navigationBarTextStyle": "black" // 状态栏字体为白色，只能为 white-白色，black-黑色 二选一
