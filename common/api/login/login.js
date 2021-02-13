@@ -13,3 +13,12 @@ export function xcxLoginByCode2(data) {
     params: data
   })
 }
+
+export function riderLogin(data) {
+  return post({
+    url: '/runerrands/rider/login',
+    params: data
+  })
+}
+
+

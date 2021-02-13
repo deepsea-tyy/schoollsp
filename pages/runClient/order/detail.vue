@@ -196,7 +196,7 @@
 					});
 				}
 				if(this.type==3){
-					data.complete=1
+					data.complete=3
 					data.id=this.item.id
 					await orderUpdate(data)
 					this.getOrderView(this.item.id)

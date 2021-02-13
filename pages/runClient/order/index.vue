@@ -4,7 +4,7 @@
 			<u-tabs-swiper inactive-color="#333333" font-size="14px" activeColor="#FFE300" ref="tabs" :list="tabList" :current="current" @change="change" :is-scroll="false" swiperWidth="750"></u-tabs-swiper>
 		</view>
 		<view v-if="list.length == 0" style="text-align: center;">
-			<image src="/static/runClient/dd1.png" mode="aspectFit"></image>
+			<image src="/static/dd1.png" mode="aspectFit"></image>
 			<view class="title">暂无订单</view>
 		</view>
 		<view class="list">
@@ -84,11 +84,10 @@
 					params.pay_status=2
 				}
 				if(this.current == 3){
-					params.pay_status=2
-					params.receiver=1
+					params.complete=1
 				}
 				if(this.current == 4){
-					params.complete=2
+					params.complete=3
 				}
 				let res = await orderList(params)
 				this.list = res.list

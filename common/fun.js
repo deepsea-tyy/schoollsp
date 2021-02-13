@@ -5,7 +5,11 @@ export function errorType (err) {
 	let codeType = [40001, 402, 502]
 	
 	if (err.errorCode == 50001) {
-		uni.navigateTo({ url: '/pages/login/wxlogin'})
+		uni.navigateTo({ url: config.loginPath})
+		return
+	}
+	if (err.errorCode == 400001) {
+		uni.navigateTo({ url: '/pages/runClient/auth/realname'})
 		return
 	}
 	

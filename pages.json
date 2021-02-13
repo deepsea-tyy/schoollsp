@@ -2,175 +2,117 @@
 	"easycom": {
 		"^u-(.*)": "@/uview-ui/components/u-$1/u-$1.vue"
 	},
-	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages,
+	"pages": [
 		{
-		    "path" : "pages/runClient/home/index",
-		    "style" :
-		    {
-		        "navigationBarTitleText": "首页",
-		        "enablePullDownRefresh": false,
-				"navigationStyle": "custom" ,// 隐藏系统导航栏
-				"navigationBarTextStyle": "black" // 状态栏字体为白色，只能为 white-白色，black-黑色 二选一
-		    }
+			"path": "pages/runRider/home/index",
+			"style": {
+				"navigationBarTitleText": "首页",
+				"enablePullDownRefresh": false
+			}
+
 		},
 		{
-		    "path" : "pages/runClient/user/index",
-		    "style" :
-		    {
-		        "navigationBarTitleText": "我的",
-		        "enablePullDownRefresh": false
-		    }
-		    
-		},
-		{
-			"path" : "pages/runClient/auth/realname",
-			"style" :
-			{
-				"navigationBarTitleText": "实名认证",
+			"path": "pages/runRider/user/index",
+			"style": {
+				"navigationBarTitleText": "我的",
 				"enablePullDownRefresh": false
 			}
 		},
 		{
-            "path" : "pages/runClient/auth/student",
-            "style" :
-            {
-                "navigationBarTitleText": "实名认证",
-                "enablePullDownRefresh": false
-            }
-            
-        },
-		{
-            "path" : "pages/runClient/auth/review",
-            "style" :
-            {
-                "navigationBarTitleText": "实名认证",
-                "enablePullDownRefresh": false
-            }
-        }
-        ,{
-            "path" : "pages/runClient/order/detail",
-            "style" :
-            {
-                "navigationBarTitleText": "订单详情",
-                "enablePullDownRefresh": false
-            }
-            
-        }
-        ,{
-            "path" : "pages/runClient/order/index",
-            "style" :
-            {
-                "navigationBarTitleText": "我的订单",
-                "enablePullDownRefresh": false
-            }
-            
-        }
-        ,{
-            "path" : "pages/runClient/user/coupons",
-            "style" :
-            {
-                "navigationBarTitleText": "优惠券",
-                "enablePullDownRefresh": false
-            }
-        }
-        ,{
-            "path" : "pages/runClient/user/rider",
-            "style" :
-            {
-                "navigationBarTitleText": "申请骑手",
-                "enablePullDownRefresh": false
-            }
-            
-        }
-        ,{
-            "path" : "pages/runClient/user/contact",
-            "style" :
-            {
-                "navigationBarTitleText": "联系客服",
-                "enablePullDownRefresh": false
-            }
-            
-        }
-        ,{
-            "path" : "pages/runClient/user/address",
-            "style" :
-            {
-                "navigationBarTitleText": "收获地址",
-                "enablePullDownRefresh": false
-            }
-            
-        }
-        ,{
-            "path" : "pages/runClient/user/addressedit",
-            "style" :
-            {
-                "navigationBarTitleText": "我的地址",
-                "enablePullDownRefresh": false
-            }
-            
-        }
-        ,{
-		    "path" : "pages/runClient/home/runexpress",
-		    "style" :
-		    {
-		        "navigationBarTitleText": "",
-				"navigationBarBackgroundColor": "#fff",
-		        "enablePullDownRefresh": false,
-				"navigationBarTextStyle": "black" // 状态栏字体为白色，只能为 white-白色，black-黑色 二选一
-		    }
+			"path": "pages/runRider/login/index",
+			"style": {
+				"navigationBarTitleText": "骑手端-登录",
+				"enablePullDownRefresh": false
+			}
+
 		},
 		{
-		    "path" : "pages/runClient/home/feerules",
-		    "style" :
-		    {
-		        "navigationBarTitleText": "计费规则",
-		        "enablePullDownRefresh": false
-		    }
-		    
+			"path": "pages/runRider/login/repassword",
+			"style": {
+				"navigationBarTitleText": "骑手端-找回密码",
+				"enablePullDownRefresh": false
+			}
+		},
+		{
+			"path": "pages/runRider/home/detail",
+			"style": {
+				"navigationBarTitleText": "订单详情",
+				"enablePullDownRefresh": false
+			}
+
+		}, {
+			"path": "pages/runRider/user/amount",
+			"style": {
+				"navigationBarTitleText": "账户管理",
+				"enablePullDownRefresh": false
+			}
+
+		},
+		{
+			"path": "pages/runRider/user/amountlog",
+			"style": {
+				"navigationBarTitleText": "账户明细",
+				"enablePullDownRefresh": false
+			}
+
+		},
+		{
+			"path": "pages/runRider/user/amountout",
+			"style": {
+				"navigationBarTitleText": "提现记录",
+				"enablePullDownRefresh": false
+			}
+
+		},
+		{
+			"path": "pages/runRider/user/statistics",
+			"style": {
+				"navigationBarTitleText": "配送统计",
+				"enablePullDownRefresh": false
+			}
+
+		},
+		{
+			"path": "pages/runRider/user/rankinglist",
+			"style": {
+				"navigationBarTitleText": "跑腿排行榜",
+				"enablePullDownRefresh": false
+			}
+		},
+		{
+			"path": "pages/runRider/user/setting",
+			"style": {
+				"navigationBarTitleText": "我的设置",
+				"enablePullDownRefresh": false
+			}
+
+		}, {
+			"path": "pages/runRider/user/repassword",
+			"style": {
+				"navigationBarTitleText": "修改密码",
+				"enablePullDownRefresh": false
+			}
+
 		}
-        ,{
-            "path" : "pages/login/wxlogin",
-            "style" :                                                                                    
-            {
-                "navigationBarTitleText": "登录",
-                "enablePullDownRefresh": false
-            }
-            
-        }
-        ,{
-            "path" : "pages/runClient/auth/search",
-            "style" :                                                                                    
-            {
-                "navigationBarTitleText": "",
-                "enablePullDownRefresh": false
-            }
-            
-        }
-    ],
+	],
 	"tabBar": {
-			"color": "#666666",
-			"selectedColor": "#FFE300",
-			"borderStyle": "white",
-			"backgroundColor": "#ffffff",// 底部导航背景色
-			"list": [{
-					"pagePath": "pages/runClient/home/index",
-					"iconPath": "static/home.png",
-					"selectedIconPath": "static/home1.png",
-					"text": "首页"
-				},
-				{
-					"pagePath": "pages/runClient/order/index",
-					"iconPath": "static/order.png",
-					"selectedIconPath": "static/order2.png",
-					"text": "订单"
-				},
-				{
-					"pagePath": "pages/runClient/user/index",
-					"iconPath": "static/my.png",
-					"selectedIconPath": "static/my2.png",
-					"text": "我的"
-				}
-			]
+		"color": "#666666",
+		"selectedColor": "#FFE300",
+		"borderStyle": "white",
+		"backgroundColor": "#ffffff", // 底部导航背景色
+		"list": [{
+				"pagePath": "pages/runRider/home/index",
+				"iconPath": "static/home.png",
+				"selectedIconPath": "static/home1.png",
+				"text": "首页"
+			},
+			{
+				"pagePath": "pages/runRider/user/index",
+				"iconPath": "static/my.png",
+				"selectedIconPath": "static/my2.png",
+				"text": "我的"
+			}
+		]
 	},
 	"globalStyle": {
 		"navigationBarTextStyle": "black",
