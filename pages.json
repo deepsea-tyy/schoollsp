@@ -101,15 +101,6 @@
             
         }
         ,{
-            "path" : "pages/runClient/user/success",
-            "style" :
-            {
-                "navigationBarTitleText": "提交成功",
-                "enablePullDownRefresh": false
-            }
-            
-        }
-        ,{
             "path" : "pages/runClient/user/addressedit",
             "style" :
             {

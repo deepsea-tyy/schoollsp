@@ -51,8 +51,15 @@
 				uni.showToast({ title: '登陆成功' })
 				uni.setStorageSync('access-token', res.token)
 				uni.setStorageSync('access-token-duration', res.duration)
-				uni.switchTab({
-					url:'/pages/runClient/home/index'
+				uni.navigateBack({
+					success: () => {
+						let page = getCurrentPages().pop();  //跳转页面成功之后
+						if (!page) {
+						  return;
+						} else {
+							page.onLoad(page.options);// page自带options对象.
+						}
+					}
 				})
 			}
 		}

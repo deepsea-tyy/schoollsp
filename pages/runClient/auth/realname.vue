@@ -137,14 +137,11 @@
 			},
 			onListChange(lists) {
 				this.list1 = lists;
-				console.log(this.list1)
 			},
 			onListChange2(lists) {
 				this.list2 = lists;
-				console.log(this.list2)
 			},
 			deleteItem(index,select) {
-				console.log(select);
 				if (select == 1) {
 					this.$refs.uUpload.remove(index);
 				}else{

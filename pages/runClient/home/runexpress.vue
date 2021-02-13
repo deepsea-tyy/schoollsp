@@ -264,7 +264,7 @@
 				that.end_place = options.address_name
 				that.model.ship_id = options.address_id
 				that.floorCost = options.floorCost
-				uni.$off('selectAddress')
+				// uni.$off('selectAddress')
 				this.setMoney()
 			})
 			this.model.type = parmas.type
@@ -274,7 +274,7 @@
 			uni.$on('selectCoupon',(options)=>{
 				that.model.coupon_ids = [options.coupon_id]
 				that.coupon_result = options.coupon_result
-				uni.$off('selectCoupon')
+				// uni.$off('selectCoupon')
 				this.setMoney()
 			})
 			this.getCost()

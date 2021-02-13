@@ -76,3 +76,26 @@ export function couponReceive(id) {
     token:true
   })
 }
+
+export function riderList(id) {
+  return get({
+    url: '/runerrands/rider/index',
+	params: {school_id:id},
+    token:false
+  })
+}
+
+export function riderView() {
+  return get({
+    url: '/runerrands/rider/view',
+	params: {},
+    token:true
+  })
+}
+export function riderCreate(data) {
+  return post({
+    url: '/runerrands/rider/create',
+	params: data,
+    token:true
+  })
+}
