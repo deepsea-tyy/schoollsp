@@ -22,3 +22,16 @@ export function runerrandsOrderComplete(data) {
 	token:true
   })
 }
+export function runerrandsOrderView(id) {
+  return get({
+    url: '/runerrands/order/view',
+    params: {id:id},
+	token:true
+  })
+}
+export function riderList(id) {
+  return get({
+    url: '/runerrands/rider/index',
+    params: {school_id:id}
+  })
+}

@@ -8,8 +8,9 @@
 		
 		<u-cell-group>
 			<u-cell-item v-if="type!=5" @click="selectValue(1)" icon="/static/runClient/qu.png" title="在哪里取货">{{start_place?start_place:"选择取货地址"}} <image src="/static/runClient/weizhi.png" class="bus-item-img" mode="aspectFit" /></u-cell-item>
-			<u-cell-item v-if="type!=5" @click="selectValue(2)" icon="/static/runClient/song.png" title="送到哪里去">{{end_place?end_place:"选择取货地址"}} <image src="/static/runClient/weizhi.png" class="bus-item-img" mode="aspectFit" /></u-cell-item>
+			<u-cell-item v-if="type!=5" @click="selectValue(2)" icon="/static/runClient/song.png" title="送到哪里去">{{end_place?end_place:"选择收货地址"}} <image src="/static/runClient/weizhi.png" class="bus-item-img" mode="aspectFit" /></u-cell-item>
 			<u-cell-item v-if="type==5" icon="/static/runClient/song.png" title="服务地点" :arrow="false"><input type="text" v-model="model.end_place" placeholder="请输入服务地址" />  </u-cell-item>
+			<u-cell-item v-if="type==5" icon="/static/runClient/song.png" title="联系电话" :arrow="false"><input type="text" v-model="model.phone" placeholder="请输入联系电话" />  </u-cell-item>
 			<u-cell-item @click="selectValue(3)" icon="" title="时间"><text style="color: #FF770B;">{{timeText}}</text>{{timeText?'':'请选择送达时间'}}</u-cell-item>
 			
 			<view style="height: 10px;background-color: #F5F6FE;"></view>
@@ -128,7 +129,7 @@
 				<view style="overflow: hidden;">
 					<view style="float: left;margin-right: 3px;padding-top: 5px;">¥</view>
 					<view style="float: left;">
-					<u-input v-model="model.samount" :type="'number'" :border="border" :placeholder="'服务金额'"/>
+					<u-input v-model="model.samount" :type="'number'" :border="false" :placeholder="'服务金额'"/>
 					</view>
 				</view>
 				<view @click="popShow=false" style="margin-top: 20px;background: #FFE300;text-align: center;height: 42px;padding-top: 10px;border-radius: 5px;">
@@ -375,6 +376,9 @@
 			async getCost(){
 				let res = await cost()
 				this.cost = res
+				this.model.weight = res.weithtCost[0].id
+				this.weight = res.weithtCost[0]['title']
+				this.weightPrice = res.weithtCost[0]['price']
 				this.setMoney();
 			},
 			actionSheetCallback(index) {

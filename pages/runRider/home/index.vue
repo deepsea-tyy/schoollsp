@@ -10,21 +10,23 @@
 		</view>
 		<view class="list">
 			<view v-for="(item, index) in list" class="item">
-				<view class="clearfix" @click="orderDetail(item.id)">
+				<view @click="orderDetail(item.id)">
+				<view class="clearfix">
 					<view style="font-size: 12px;color: #FFFFFF;float:left;margin-left: 15px;width: 16px;height: 16px;background: #FF4C25;border-radius: 10px;text-align: center;">取</view>
 					<view style="float:left;margin-left: 5px;font-size: 12px;">{{item.type==2?'取快递':(item.type==3?'外卖代拿':(item.type==4?'校园跑腿':'其他帮助'))}}</view>
 					<view style="float:left;margin-left: 5px;font-weight: bold;font-size: 12px;color: #333333;">{{item.runerrandsStartPlace.name}}</view>
 					<view style="float:right;font-size: 12px;color: #FF0000;margin-right: 14px;font-weight: 500;">¥ {{item.pay_price}}</view>
 				</view>
 
-				<view v-if="item.type==5" class="clearfix" @click="orderDetail(item.id)">
+				<view v-if="item.type==5" class="clearfix">
 					<view style="font-size: 12px;color: #FFFFFF;float:left;margin-left: 15px;width: 16px;height: 16px;background: #00C56C;border-radius: 10px;text-align: center;">帮</view>
+					<view style="float:left;margin-left: 5px;font-size: 12px;color: #666666;">{{item.runerrands.end_place+' '}} {{item.runerrands.content}}</view>
 					<view style="float:right;font-size: 12px;color: #FF0000;margin-right: 14px;">¥ {{item.pay_price}}</view>
 				</view>
 
-				<view style="margin-top: 10px;" @click="orderDetail(item.id)">
-					<view style="font-size: 12px;color: #666666;margin-left: 15px;">{{item.shipAddress.school}} {{item.shipAddress.school_area}} {{item.shipAddress.building_no}}-{{item.shipAddress.floor}}-{{item.shipAddress.house_number}}</view>
-					<view style="font-size: 12px;color: #666666;margin-left: 15px;">{{item.type!=5&&!item.runerrandsWeight?'斤以下':item.runerrandsWeight.title}}</view>
+				<view style="margin-top: 10px;">
+					<view  v-if="item.type!=5" style="font-size: 12px;color: #666666;margin-left: 15px;">{{item.shipAddress.school}} {{item.shipAddress.school_area}} {{item.shipAddress.building_no}}-{{item.shipAddress.floor}}-{{item.shipAddress.house_number}}</view>
+					<view  v-if="item.type!=5" style="font-size: 12px;color: #666666;margin-left: 15px;">{{item.runerrandsWeight.title}}</view>
 					<view class="clearfix">
 						<view style="text-align: center;float:left;margin-left: 15px;font-size: 10px;color: #FF4C25;height: 15px;background: rgba(153, 153, 153, 0.5);opacity: 0.5;border-radius: 5px;padding:0 6px">
 							下单时间 {{$fun.formatDate(item.created_at,1)}}
@@ -34,12 +36,13 @@
 						</view>
 					</view>
 				</view>
+				</view>
 				<view @click="btnClick(item.id,1)" v-if="!item.receiver" style="background: #FFE300;border-radius: 5px;margin: 10px 27px;height: 25px;padding-top: 3px;text-align: center;">
 					立即抢单
 				</view>
 				<view v-if="item.receiver && item.complete!=3" style="margin-top: 10px;font-size: 12px;color: #FFE300;">
-					<view style="height: 25px;padding-top: 4px;float: left;margin-left: 27px;width: 140px;border: 1px solid #FFE300;box-sizing: border-box;border-radius: 5px;;text-align: center;">
-						电话：13876684031
+					<view @click="makeCall(item.shipAddress.phone)" style="height: 25px;padding-top: 4px;float: left;margin-left: 27px;width: 140px;border: 1px solid #FFE300;box-sizing: border-box;border-radius: 5px;;text-align: center;">
+						电话：{{item.type==5? item.runerrands.phone:item.shipAddress.phone}}
 					</view>
 					<view @click="btnClick(item.id,2)" v-if="!item.complete" style="height: 25px;padding-top: 4px;float: right;color: #333333;margin-right: 27px;background: #FFE300;width: 140px;border-radius: 5px;text-align: center;">
 						确认取货
@@ -167,7 +170,12 @@
 			},
 			async complete(data){
 				await runerrandsOrderComplete(data)
-				uni.showToast({  })
+				uni.showToast({title:'操作成功'})
+			},
+			makeCall(phone){
+				uni.makePhoneCall({
+				    phoneNumber: phone
+				});
 			}
 		}
 	}
