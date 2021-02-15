@@ -24,10 +24,10 @@ export function userFund() {
   })
 }
 
-export function fundLog() {
+export function fundLog(data) {
   return get({
     url: '/user/user-fund/log',
-    params: {},
+    params: data,
 	token:true
   })
 }
@@ -37,5 +37,53 @@ export function drawMoney(data) {
     url: '/user/user-fund/draw-money',
     params: data,
 	token:true
+  })
+}
+export function drawMoneyList(data) {
+  return get({
+    url: '/user/user-fund/draw-money-list',
+    params: data,
+	token:true
+  })
+}
+export function userStatistics(data) {
+  return get({
+    url: '/runerrands/user/statistics',
+    params: data,
+	token:true
+  })
+}
+export function repassword(data) {
+  return post({
+    url: '/runerrands/user/repassword',
+    params: data,
+	token:true
+  })
+}
+export function logout() {
+  return post({
+    url: '/user/logout',
+	token:true
+  })
+}
+export function riderInfo() {
+  return get({
+    url: '/runerrands/rider/view',
+	params: {},
+    token:true
+  })
+}
+export function riderUpdate(data) {
+  return post({
+    url: '/runerrands/rider/update',
+	params: data,
+    token:true
+  })
+}
+export function riderRank(id) {
+  return get({
+    url: '/runerrands/rider/rank',
+	params: {school_id:id},
+    token:true
   })
 }

@@ -36,7 +36,11 @@
 			}
 		},
 		onLoad(params) {
-			this.geUserInfo()
+			this.getUserInfo()
+			this.getUserAuth()
+		},
+		onShow() {
+			this.getUserFund()
 		},
 		methods: {
 			toPage(path){
@@ -44,13 +48,17 @@
 					url: path
 				});
 			},
-			async geUserInfo() {
+			async getUserInfo() {
 				let res = await userInfo()
 				this.uinfo = res
-				let std = await realNameAuthView()
-				this.std = std
+			},
+			async getUserFund() {
 				let fund = await userFund()
 				this.fund = fund
+			},
+			async getUserAuth() {
+				let std = await realNameAuthView()
+				this.std = std
 			},
 			
 		}

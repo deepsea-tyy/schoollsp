@@ -51,6 +51,9 @@
 				money:''
 			}
 		},
+		onLoad(params) {
+			this.geFund()
+		},
 		methods: {
 			async geFund() {
 				let fund = await userFund()
@@ -58,6 +61,8 @@
 			},
 			async drawMoney() {
 				let fund = await drawMoney({money:this.money})
+				this.money=''
+				this.geFund()
 				uni.showToast({title:'提交成功'})
 			},
 			

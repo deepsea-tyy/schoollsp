@@ -169,7 +169,6 @@
 			selectCfm(e){
 				this.model.enrollment_at = e.timestamp
 				this.enrollment_at = e.year + '-' + e.month + '-' + e.day
-				console.log(this.model)
 			},
 			onListChange(lists) {
 				this.list1 = lists;

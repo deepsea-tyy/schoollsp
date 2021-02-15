@@ -5,7 +5,9 @@ export function errorType (err) {
 	let codeType = [40001, 402, 502]
 	
 	if (err.errorCode == 50001) {
-		uni.navigateTo({ url: config.loginPath})
+		uni.showToast({ title: err.message , icon: 'none', success() {
+			uni.navigateTo({ url: config.loginPath})
+		}})
 		return
 	}
 	if (err.errorCode == 400001) {
@@ -42,16 +44,14 @@ export function isLogin() {
 	
 	return token ? true : false
 }
-export function getDate(){
-	var date = new Date();
-	var year = date.getFullYear();
-	var month = date.getMonth() + 1;
-	var day = date.getDate();
-	var hours = date.getHours();
-	var minutes = date.getMinutes();
-	var seconds = date.getSeconds();
-	//获取当前系统时间  
-	var currentDate = year + '-' + month + '-' + day + ' ' + hours + ':' + minutes + ':' + seconds;
+export function getDate(type=0){
+	let date = new Date();
+	let year = date.getFullYear();
+	let month = date.getMonth() + 1;
+	let day = date.getDate();
+	let hours = date.getHours();
+	let minutes = date.getMinutes();
+	let seconds = date.getSeconds();
 	if (month >= 1 && month <= 9) {
 		month = '0' + month;
 	}
@@ -67,26 +67,29 @@ export function getDate(){
 	if (seconds >= 0 && seconds <= 9) {
 		seconds = '0' + seconds;
 	}
-	var currentFormatDate = year + '-' + month + '-' + day + ' ' + hours + ':' + minutes + ':' + seconds;
+	let currentFormatDate = year + '-' + month + '-' + day + ' ' + hours + ':' + minutes + ':' + seconds;
+	if(type==1){
+		currentFormatDate = year + '年' + month + '月'
+	}
 	return currentFormatDate;
 }
 // error 错误提示
 
 export function getmessage(data){
-    for (var key in data)
+    for (let key in data)
         return data[key];
 }
 
 export function parseParam(param,key,encode){
    
       if(param==null) return '';
-        var paramStr = '';
-        var t = typeof (param);
+        let paramStr = '';
+        let t = typeof (param);
         if (t == 'string' || t == 'number' || t == 'boolean') {
           paramStr += '&' + key + '=' + ((encode==null||encode) ? encodeURIComponent(param) : param);
         } else {
-          for (var i in param) {
-            var k = key == null ? i : key + (param instanceof Array ? '[' + i + ']' : '.' + i);
+          for (let i in param) {
+            let k = key == null ? i : key + (param instanceof Array ? '[' + i + ']' : '.' + i);
             paramStr += parseParam(param[i], k, encode);
           }
         }
@@ -95,36 +98,39 @@ export function parseParam(param,key,encode){
 
 // 时间转换  年-月-日  时：分：秒
 
-export function formatDate(timestamp,num=0) {
+export function formatDate(timestamp,type=0) {
+	if(!timestamp){
+		return '--'
+	}
     timestamp = timestamp+'';
     timestamp = timestamp.length==10?timestamp*1000:timestamp;
-    var date = new Date(timestamp);
-    var y = date.getFullYear();  
-    var m = date.getMonth() + 1;  
+    let date = new Date(timestamp);
+    let y = date.getFullYear();  
+    let m = date.getMonth() + 1;  
     m = m < 10 ? ('0' + m) : m;  
-    var d = date.getDate();  
+    let d = date.getDate();  
     d = d < 10 ? ('0' + d) : d;  
-    var h = date.getHours();
+    let h = date.getHours();
     h = h < 10 ? ('0' + h) : h;
-    var minute = date.getMinutes();
-    var second = date.getSeconds();
+    let minute = date.getMinutes();
+    let second = date.getSeconds();
     minute = minute < 10 ? ('0' + minute) : minute;  
     second = second < 10 ? ('0' + second) : second; 
-    if(num==0){
+    if(type==0){
         return y + '-' + m + '-' + d;  
-    }else if(num==1){
+    }else if(type==1){
         return y + '-' + m + '-' + d +' '+ h +':'+ minute;  
-    }else if(num==2){
+    }else if(type==2){
         return y + '-' + m + '-' + d +' '+ h +':'+ minute +':' + second;  
-    }else if(num == 3){
+    }else if(type == 3){
 		return y + '年' + m + '月' + d +'日 ';
-	}else if(num==4){
+	}else if(type==4){
         return y + '年' + m + '月' + d +'日 '+ h +':'+ minute;  
-    }else if(num==5){
+    }else if(type==5){
         return y + '年' + m + '月' + d +'日 '+ h +':'+ minute +':' + second;
-    }else if(num==6){
+    }else if(type==6){
 		return h +':'+ minute ;
-	}else if(num==7){
+	}else if(type==7){
 		return h +':'+ minute + ':' + second;
 	}
 }
@@ -160,9 +166,9 @@ export function friendlyFormatTime(stringTime) {
 }
 // 当前时间格式化
 export function dateType(num) {
-	var myDate = new Date(); //实例一个时间对象；
+	let myDate = new Date(); //实例一个时间对象；
 	myDate.getFullYear();   //获取系统的年；
-	var month = myDate.getMonth()+1;   //获取系统月份，由于月份是从0开始计算，所以要加1
+	let month = myDate.getMonth()+1;   //获取系统月份，由于月份是从0开始计算，所以要加1
 	myDate.getDate(); // 获取系统日，
 	myDate.getHours(); //获取系统时，
 	myDate.getMinutes(); //分
