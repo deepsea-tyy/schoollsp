@@ -54,8 +54,10 @@
 			}
 		},
 		onLoad(params) {
-			this.getAddres()
 			this.type = params.type ? params.type:null
+		},
+		onShow() {
+			this.getAddres()
 		},
 		methods: {
 			toPage(path){

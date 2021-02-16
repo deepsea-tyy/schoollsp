@@ -23,7 +23,7 @@
 			<view class="status">审核失败！</view>
 			<view class="desc">{{refuse_reasons}}</view>
 			
-			<u-button :custom-style="customStyle1" :hair-line="hairLin" @click="toPage('/pages/runClient/home/index')">知道了</u-button>
+			<u-button :custom-style="customStyle1" :hair-line="hairLin" @click="toSwitchTab('/pages/runClient/user/index')">知道了</u-button>
 			<u-button :custom-style="customStyle " :hair-line="hairLin" @click="toPage('/pages/runClient/auth/realname')">再次申请</u-button>
 		</view>
 	
@@ -66,16 +66,27 @@
 		},
 		methods: {
 			toPage(path){
-				console.log(11111)
 				uni.navigateTo({
 				    url: path
-				});
+				})
+			},
+			toSwitchTab(path){
+				uni.switchTab({
+				    url: path
+				})
 			},
 			async getStudentAuth(){
 				let res = await studentAuthView()
 				this.status = res.status
 				if(res.refuse_reasons){
 					this.refuse_reasons = res.refuse_reasons
+				}
+				if(this.status == 0){
+					setTimeout(()=>{
+						uni.switchTab({
+						    url: '/pages/runClient/user/index'
+						})
+					},3000)
 				}
 			},
 		}

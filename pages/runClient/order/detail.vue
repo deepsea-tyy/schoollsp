@@ -1,8 +1,8 @@
 <template>
 	<view style="min-height: 100vh;background-color: #F5F5F5;padding-top: 10px;">
 		<view class="title">
-			<view @click="show=true" style="position: absolute;left: 50%;transform: translate(-50%,-50%);">
-				<view style="box-sizing: border-box;display: flex;align-items: center;height: 25px;font-size: 14px;"> {{item.status==2?'已取消':(item.complete==2?'订单已完成':(item.pay_status == 1 ? '订单代付款':(item.receiver?'订单进行中':'订单待接单')))}}<image src="/static/runClient/order1.png" mode="aspectFit"></image></view>
+			<view @click="show=true" style="position: absolute;left: 50%;transform: translate(-50%,-50%);overflow: hidden;">
+				<view style="box-sizing: border-box;display: flex;align-items: center;height: 25px;font-size: 14px;"> {{item.status==2?'已取消':(item.complete==3?'订单已完成':(item.pay_status == 1 ? '订单代付款':(item.receiver?'订单进行中':'订单待接单')))}}<image src="/static/runClient/order1.png" mode="aspectFit"></image></view>
 			</view>
 			<view v-if="item.status==1 && item.complete < 3" style="margin-top: 28px;position: absolute;left: 50%;transform: translate(-50%,-50%);">
 				<view v-if="item.pay_status == 1" @click="btnClick(1)" class="btn">立即支付</view><view  v-if="!item.receiver" @click="btnClick(2)" class="btn">取消订单</view>
@@ -181,7 +181,9 @@
 					signType: pay.signType,
 					paySign: pay.paySign,
 					success: function (res) {
-						that.toPage('/pages/runClient/order/index')
+						uni.switchTab({
+						    url: '/pages/runClient/order/index'
+						})
 					},
 					fail: function (err) {
 						console.log('fail:' + JSON.stringify(err));

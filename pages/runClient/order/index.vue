@@ -84,7 +84,7 @@
 					params.pay_status=2
 				}
 				if(this.current == 3){
-					params.complete=1
+					params.complete='1,2'
 				}
 				if(this.current == 4){
 					params.complete=3

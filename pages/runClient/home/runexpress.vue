@@ -105,7 +105,7 @@
 			<view v-if="popType==2" style="padding: 20px 13px;">
 				<view style="margin-bottom: 20px;color: #000000;font-size: 18px;">订单超时</view>
 				<view style="padding: 0 20px;">
-					<view style="text-align: center;color: #FFE300;height: 20px;margin-bottom: 10px;"> <text v-if="model.overtime" > {{model.overtime}}分钟</text></view>
+					<view style="text-align: center;color: #FFE300;height: 20px;margin-bottom: 10px;"> <text v-if="model.overtime" > {{model.overtime}}小时</text></view>
 					<u-slider v-model="model.overtime" :active-color="'#FFE300'"></u-slider>
 				</view>
 				<view @click="popShow=false" style="background: #FFE300;text-align: center;height: 42px;padding-top: 10px;margin-top: 40px;border-radius: 5px;">
@@ -421,7 +421,6 @@
 			async pay(){
 				let res = await orderCreate(this.model)
 				let pay = await orderPay({order_id:res.id,scene:2,pay_platform:2,pay_type:'lite'})
-				let that = this
 				uni.requestPayment({
 				    provider: 'wxpay',
 				    timeStamp: pay.timeStamp,
@@ -430,7 +429,9 @@
 				    signType: pay.signType,
 				    paySign: pay.paySign,
 				    success: function (res) {
-				        that.toPage('/pages/runClient/order/index')
+						uni.switchTab({
+						    url: '/pages/runClient/order/index'
+						})
 				    },
 				    fail: function (err) {
 				        console.log('fail:' + JSON.stringify(err));

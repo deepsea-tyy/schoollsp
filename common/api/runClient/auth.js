@@ -24,10 +24,10 @@ export function realNameAuthUpdate(data) {
   })
 }
 
-export function studentAuthView() {
+export function studentAuthView(data={}) {
   return get({
     url: '/user/student-auth/view',
-    params: {},
+    params: data,
 	token:true
   })
 }

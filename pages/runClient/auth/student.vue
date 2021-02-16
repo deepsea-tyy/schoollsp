@@ -208,7 +208,7 @@
 				}
 			},
 			async getData(){
-				let res = await studentAuthView()
+				let res = await studentAuthView({auth:1})
 				this.model = res
 				this.frontalPhoto = res.frontalPhoto?res.frontalPhoto:{}
 				this.reversePhoto = res.reversePhoto?res.reversePhoto:{},
