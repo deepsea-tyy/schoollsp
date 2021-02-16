@@ -113,7 +113,7 @@
 	export default {
 		data(){
 			return {
-				authCheckShow:true,
+				authCheckShow:false,
 			}
 		},
 		onLoad() {

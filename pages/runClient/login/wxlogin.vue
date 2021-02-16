@@ -8,7 +8,7 @@
 </template>
 
 <script>
-	import {xcxLoginByCode2} from '../../common/api/login/login.js'
+	import {xcxLoginByCode2} from '../../../common/api/login/login.js'
 	export default {
 		data() {
 			return {

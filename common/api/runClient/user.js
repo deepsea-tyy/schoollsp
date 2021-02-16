@@ -99,3 +99,10 @@ export function riderCreate(data) {
     token:true
   })
 }
+
+export function logout() {
+  return post({
+    url: '/user/logout',
+	token:true
+  })
+}

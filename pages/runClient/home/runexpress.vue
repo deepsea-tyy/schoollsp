@@ -10,7 +10,7 @@
 			<u-cell-item v-if="type!=5" @click="selectValue(1)" icon="/static/runClient/qu.png" title="在哪里取货">{{start_place?start_place:"选择取货地址"}} <image src="/static/runClient/weizhi.png" class="bus-item-img" mode="aspectFit" /></u-cell-item>
 			<u-cell-item v-if="type!=5" @click="selectValue(2)" icon="/static/runClient/song.png" title="送到哪里去">{{end_place?end_place:"选择收货地址"}} <image src="/static/runClient/weizhi.png" class="bus-item-img" mode="aspectFit" /></u-cell-item>
 			<u-cell-item v-if="type==5" icon="/static/runClient/song.png" title="服务地点" :arrow="false"><input type="text" v-model="model.end_place" placeholder="请输入服务地址" />  </u-cell-item>
-			<u-cell-item v-if="type==5" icon="/static/runClient/song.png" title="联系电话" :arrow="false"><input type="text" v-model="model.phone" placeholder="请输入联系电话" />  </u-cell-item>
+			<u-cell-item v-if="type==5" icon="" title="联系电话" :arrow="false"><input type="text" v-model="model.phone" placeholder="请输入联系电话" />  </u-cell-item>
 			<u-cell-item @click="selectValue(3)" icon="" title="时间"><text style="color: #FF770B;">{{timeText}}</text>{{timeText?'':'请选择送达时间'}}</u-cell-item>
 			
 			<view style="height: 10px;background-color: #F5F6FE;"></view>

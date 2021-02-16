@@ -1,7 +1,9 @@
 <template>
 	<view style="min-height: 100vh;background-color: #FFFFFF;padding-top: 40px;">
 		<view style="overflow: hidden;">
-			<view class="avatar"><image :src="userInfo.file.file_url" class="nodata" mode="aspectFit"></image></view>
+			<view class="avatar">
+				<image :src="userInfo.file.file_url" class="nodata" mode="aspectFit"></image>
+			</view>
 			<view style="padding: 7px;">
 				<view v-if="!userInfo.nickname" @click="toPage('/pages/runClient/login/wxlogin')" style="font-size: 20px;color: #333333;">点击登录</view>
 				<view style="font-size: 18px;color: #333333;">{{userInfo.nickname}}</view>
@@ -13,7 +15,8 @@
 		</view>
 		<view style="padding: 21px;">
 			<u-cell-group>
-				<u-cell-item v-if="studentAuth!=1" @click="toPage('/pages/runClient/auth/realname')" icon="/static/runClient/user12.png" title="实名认证">
+				<u-cell-item v-if="studentAuth!=1" @click="toPage('/pages/runClient/auth/realname')" icon="/static/runClient/user12.png"
+				 title="实名认证">
 					{{studentAuth===null?'去认证':(studentAuth==0?'审核中':'审核失败')}}
 				</u-cell-item>
 				<u-cell-item @click="toPage('/pages/runClient/user/address')" icon="/static/runClient/user1.png" title="我的地址"></u-cell-item>
@@ -21,24 +24,31 @@
 				<u-cell-item @click="toPage('/pages/runClient/user/coupons')" icon="/static/runClient/user3.png" title="优惠券"></u-cell-item>
 				<u-cell-item @click="toPage('/pages/runClient/user/rider')" icon="/static/runClient/user4.png" title="申请骑手"></u-cell-item>
 				<u-cell-item @click="toPage('/pages/runClient/user/contact')" icon="/static/runClient/user5.png" title="联系客服"></u-cell-item>
+				<u-cell-item @click="logout()" icon="" title="退出登录"></u-cell-item>
 			</u-cell-group>
 		</view>
 	</view>
 </template>
 
 <script>
-	import {userInfo, school} from '../../../common/api/runClient/user.js'
-	import {studentAuthView} from '../../../common/api/runClient/auth.js'
+	import {
+		userInfo,
+		school,
+		logout
+	} from '../../../common/api/runClient/user.js'
+	import {
+		studentAuthView
+	} from '../../../common/api/runClient/auth.js'
 	export default {
 		data() {
 			return {
-				userInfo:{
-					file:{
-						file_url:''
+				userInfo: {
+					file: {
+						file_url: ''
 					}
 				},
-				studentAuth:null,
-				school:'',
+				studentAuth: null,
+				school: '',
 			}
 		},
 		onLoad() {
@@ -46,35 +56,38 @@
 			this.getStudentAuth()
 		},
 		methods: {
-			toPage(path){
-				if(path == '/pages/runClient/order/index'){
+			toPage(path) {
+				if (path == '/pages/runClient/order/index') {
 					uni.switchTab({
-						url:path
+						url: path
 					})
 				}
-				if (path == '/pages/runClient/auth/realname' && this.studentAuth !== null){
+				if (path == '/pages/runClient/auth/realname' && this.studentAuth !== null) {
 					path = '/pages/runClient/auth/review'
 				}
 				uni.navigateTo({
 					url: path
 				});
 			},
-			async getUinfo(){
+			async getUinfo() {
 				let res = await userInfo()
 				res.file.file_url = this.$fun.fileUrl(res.file.file_url)
 				this.userInfo = res
 			},
-			async getStudentAuth(){
+			async getStudentAuth() {
 				let res = await studentAuthView()
-				this.studentAuth = res.status ? res.status:0
-				this.school = res.school?res.school.name:''
-			}
+				this.studentAuth = res.status ? res.status : 0
+				this.school = res.school ? res.school.name : ''
+			},
+			logout() {
+				logout()
+			},
 		}
 	}
 </script>
 
 <style>
-	.avatar{
+	.avatar {
 		width: 60px;
 		height: 60px;
 		border-radius: 50px;
@@ -83,7 +96,8 @@
 		margin-right: 16px;
 		float: left;
 	}
-	.avatar image{
+
+	.avatar image {
 		width: 60px;
 		height: 60px;
 	}

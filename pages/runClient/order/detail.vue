@@ -4,11 +4,11 @@
 			<view @click="show=true" style="position: absolute;left: 50%;transform: translate(-50%,-50%);">
 				<view style="box-sizing: border-box;display: flex;align-items: center;height: 25px;font-size: 14px;"> {{item.status==2?'已取消':(item.complete==2?'订单已完成':(item.pay_status == 1 ? '订单代付款':(item.receiver?'订单进行中':'订单待接单')))}}<image src="/static/runClient/order1.png" mode="aspectFit"></image></view>
 			</view>
-			<view v-if="item.status==1 && item.complete != 2" style="margin-top: 28px;position: absolute;left: 50%;transform: translate(-50%,-50%);">
+			<view v-if="item.status==1 && item.complete < 3" style="margin-top: 28px;position: absolute;left: 50%;transform: translate(-50%,-50%);">
 				<view v-if="item.pay_status == 1" @click="btnClick(1)" class="btn">立即支付</view><view  v-if="!item.receiver" @click="btnClick(2)" class="btn">取消订单</view>
 			</view>
-			<view v-if="item.status==1 && item.receiver" style="margin-top: 28px;position: absolute;left: 50%;transform: translate(-50%,-50%);">
-				<view @click="btnClick(3)" class="btn">确认收货</view><view @click="btnClick(4)" class="btn">联系骑手</view>
+			<view v-if="item.status==1 && item.receiver && item.complete<3" style="margin-top: 28px;position: absolute;left: 50%;transform: translate(-50%,-50%);">
+				<view @click="btnClick(3)" class="btn">确认收货</view><view @click="makeCall(item.rider.phone)" class="btn">联系骑手</view>
 			</view>
 		</view>
 		<view style="padding: 10px 15px;background-color: #FFFFFF;">
@@ -17,11 +17,11 @@
 			<view class="msg">
 				<text class="dtitle">订单类型：</text><text class="dmsg">{{item.type==2?'取快递':(item.type==3?'外卖代拿':(item.type==4?'校园跑腿':'其他帮助'))}}</text>
 			</view>
-			<view class="msg">
+			<view v-if="item.type!=5" class="msg">
 				<text class="dtitle">收  件  人：</text><text class="dmsg">{{item.ship_name}}</text>
 			</view>
 			<view class="msg">
-				<text class="dtitle">联系电话：</text><text class="dmsg">{{item.ship_phone}}</text>
+				<text class="dtitle">联系电话：</text><text class="dmsg">{{item.type!=5 ? item.ship_phone:item.runerrands.phone}}</text>
 			</view>
 			<view v-if="item.ship_address" class="msg">
 				<text class="dtitle">收货地址：</text><text class="dmsg">{{item.ship_address.school}}{{item.ship_address.building_no}}号楼{{item.ship_address.house_number}}{{item.ship_address.house_number}}室</text>
@@ -37,6 +37,9 @@
 			</view>
 			<view class="msg">
 				<text class="dtitle">优  惠  券：</text><text class="dmsg">{{item.coupon?'有':'无'}}</text>
+			</view>
+			<view v-if="item.type==5" class="msg">
+				<text class="dtitle">服务费用：</text><text class="dmsg">{{item.samount?('¥'+item.samount):''}}</text>
 			</view>
 			<view class="msg">
 				<text class="dtitle">费         用：</text><text class="dmsg">¥{{item.pay_price}}</text>
@@ -87,7 +90,7 @@
 							</template>
 						</u-time-line-item>
 						
-						<u-time-line-item v-if="item.complete==2">
+						<u-time-line-item v-if="item.complete>1">
 							<template v-slot:node>
 								<view style="background: #FFE300;border-radius:50px">
 									<image src="/static/runClient/order2.png" mode="aspectFit"></image>
@@ -133,6 +136,11 @@
 			this.getOrderView(params.order_id)
 		},
 		methods: {
+			makeCall(phone) {
+				uni.makePhoneCall({
+					phoneNumber: phone
+				});
+			},
 			btnClick(type){
 				this.type = type
 				switch(type) {

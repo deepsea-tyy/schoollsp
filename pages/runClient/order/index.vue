@@ -25,7 +25,7 @@
 				<view style="margin-top: 10px;">
 					<view style="text-align: center;float:left;margin-left: 15px;font-size: 10px;color: #FF4C25;height: 15px;background: rgba(153, 153, 153, 0.5);opacity: 0.5;border-radius: 5px;padding:0 6px">{{$fun.friendlyFormatTime($fun.formatDate(item.created_at,2))}}</view> 
 					<view style="text-align: center;float:left;margin-left: 15px;font-size: 10px;color: #FF4C25;">{{$fun.formatDate(item.created_at,1)}}</view>
-					<view style="float:right;font-size: 10px;color: #FF0000;margin-right: 14px;">{{item.status==2?'已取消':(item.complete==2?'已完成':(item.pay_status == 1 ? '未支付':(item.receiver?'待送达':'待接单')))}}</view>
+					<view style="float:right;font-size: 10px;color: #FF0000;margin-right: 14px;">{{item.status==2?'已取消':(item.complete==3?'已完成':(item.pay_status == 1 ? '未支付':(item.receiver?'待送达':'待接单')))}}</view>
 				</view>
 			</view>
 			
@@ -61,7 +61,7 @@
 				list:[],
 			}
 		},
-		onLoad() {
+		onShow() {
 			this.getOrderList()
 		},
 		methods: {
