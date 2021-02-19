@@ -226,7 +226,6 @@ export function getScrollVoiceDetail() {
 	return height
 }
 
-// 页面可滚动高度(顶部导航+公告头部)
 export function fileUrl(path) {
 	return config.baseUrl + path
 }
