@@ -22,3 +22,21 @@ export function riderLogin(data) {
 }
 
 
+
+export function miniLogin(data) {
+  return post({
+    url: '/login/mini/code2',
+    params: data
+  })
+}
+
+
+
+export function miniPhoneLogin(data) {
+  return post({
+    url: '/login/mini/login-by-phone',
+    params: data
+  })
+}
+
+
